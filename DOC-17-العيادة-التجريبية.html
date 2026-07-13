@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-17 — خطة العيادة التجريبية والاختبار | Medify</title>
+<style>
+:root{--ink:#0f2233;--teal:#0e7c86;--td:#0a5c64;--sky:#eaf6f7;--line:#d7e3e8;--gold:#c9a227;--muted:#5b7280;--bg:#f7fafb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+.page{max-width:940px;margin:0 auto;padding:32px 24px 80px}
+header.doc{background:linear-gradient(135deg,var(--td),var(--teal));color:#fff;border-radius:14px;padding:34px 30px;margin-bottom:26px}
+.kicker{font-size:13px;opacity:.85}h1{font-size:28px;margin:6px 0 4px}.sub{font-size:15px;opacity:.9}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+.status{background:var(--gold)!important;color:#3a2c00;font-weight:700}
+section{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px 26px;margin-bottom:16px}
+h2{color:var(--td);font-size:19px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+h2 .num{color:var(--gold);margin-inline-end:6px}
+p{margin-bottom:10px}ul,ol{margin:6px 24px 12px 0}li{margin-bottom:6px}
+bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,monospace;font-size:.93em;color:var(--td)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+th{background:var(--sky);color:var(--td);padding:7px 10px;text-align:right;border:1px solid var(--line)}
+td{padding:6px 10px;border:1px solid var(--line);vertical-align:top}
+.locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:13px 17px;margin:10px 0}.locked b{color:#7a6410}
+.pr{border-inline-start:4px solid var(--teal);background:var(--sky);border-radius:8px;padding:11px 15px;margin:10px 0}
+footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+.approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:16px 20px;text-align:center;font-size:15px;margin-top:22px}
+</style>
+</head>
+<body><div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 17 من 19 · مبنية على DOC-02 §٧ و DOC-03 §٧ (معتمدتان)</div>
+  <h1>DOC-17 — خطة العيادة التجريبية والاختبار</h1>
+  <div class="sub">لا شراء بالجملة قبل اختبار وحدة واحدة في بيئة حقيقية (منهجية سادساً). هذه الوثيقة تحدد الوحدة والبروتوكول وعتبات القرار.</div>
+  <div class="meta"><span>الإصدار: 1.0</span><span>التاريخ: 2026-07-06</span><span class="status">الحالة: بانتظار الاعتماد</span><span>المالك: عبدالمجيد التركي</span></div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> الاختبار التقني قبل التجربة</h2>
+  <table>
+    <tr><th>المستوى</th><th>ما يُختبر</th><th>بوابة النجاح</th></tr>
+    <tr><td>وحدات + تكامل</td><td>كل <bdi>FR</bdi> وكل نقطة <bdi>DOC-05</bdi> · آلة حالات الزيارة · قيد «لا رفع بلا اعتماد»</td><td>تغطية المسارات الحرجة 100%، تُشغَّل في كل <bdi>CI</bdi></td></tr>
+    <tr><td>عزل أمني</td><td>سيناريوهات وصول عابرة للمنشآت وعابرة للدكاترة (آلي) · محاولة <bdi>UPDATE</bdi> على <bdi>approvals</bdi></td><td>فشل كل المحاولات — بلا استثناء</td></tr>
+    <tr><td>حمل</td><td>جلسات <bdi>WS</bdi> متزامنة (<bdi>NFR-12</bdi>) · أزمنة <bdi>NFR-01/02/03</bdi> تحت الحمل</td><td>الحدود محققة عند 200 جلسة متزامنة</td></tr>
+    <tr><td><b>تحقق <bdi>STT</bdi></b></td><td>عينة 30+ تسجيلاً حقيقياً (لهجات، ضوضاء عيادة، كلام متداخل) — بموافقات موثقة</td><td>خط أساس دقة موثق؛ يُقفل اختيار نموذج <bdi>P1</bdi> في <bdi>DOC-07</bdi> بإصدار محدث</td></tr>
+    <tr><td>انحدار المطالبات</td><td>عينة زيارات ثابتة تُعاد على كل إصدار مطالبة (<bdi>DOC-15</bdi> §١)</td><td>لا تراجع في جودة المخرجات المعتمدة</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> بروتوكول العيادة التجريبية</h2>
+  <ul>
+    <li><b>الوحدة:</b> منشأة خاصة واحدة، عيادة واحدة، 2–3 دكاترة، 4 أسابيع، مقاعد مجانية (باقة تجربة <bdi>DOC-09</bdi>).</li>
+    <li><b>الأسبوع 0 (خط الأساس):</b> قياس الوضع الحالي قبل Medify: زمن التوثيق لكل زيارة، وعدد المطالبات المرفوضة لأسباب توثيقية/ترميزية في آخر 3 أشهر — <b>هذا يغلق بند التحقق المعلق في <bdi>DOC-02</bdi></b>.</li>
+    <li><b>الأسابيع 1–4:</b> استخدام فعلي كامل؛ مراجعة أسبوعية بلوحة <bdi>DOC-14</bdi> §٣ + مقابلة قصيرة مع كل دكتور.</li>
+    <li><b>الدعم:</b> قناة مباشرة مع المؤسس؛ كل عطل يُسجل برمزه (<bdi>DOC-13</bdi>) في ذاكرة المشروع.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">٣</span> عتبات القرار (من فرضيات <bdi>DOC-02</bdi> §٧ ومقاييس <bdi>DOC-03</bdi> §٧)</h2>
+  <table>
+    <tr><th>الفرضية</th><th>المقياس</th><th>عتبة النجاح</th><th>إن فشلت</th></tr>
+    <tr><td>سرعة المراجعة</td><td><bdi>visit.approved.review_ms</bdi></td><td>≤ دقيقتان وسيطاً بنهاية الأسبوع 2</td><td>إعادة تصميم <bdi>W-214</bdi> قبل أي بيع</td></tr>
+    <tr><td>جودة التلخيص</td><td>نسبة اعتماد بتعديل طفيف/بلا تعديل</td><td>≥ 70%</td><td>دورة تحسين <bdi>P2</bdi> + القوالب</td></tr>
+    <tr><td>قيمة الإرشاد</td><td>نسبة قبول الإرشادات (<bdi>guidance.resolved</bdi>)</td><td>≥ 50% سريري · ≥ 70% ترميزي</td><td>مراجعة <bdi>P3</bdi> — الإرشاد المزعج أخطر من غيابه</td></tr>
+    <tr><td>الالتزام</td><td><bdi>session.daily_active</bdi></td><td>≥ 80% بعد الأسبوع الأول</td><td>مقابلات هجران فورية</td></tr>
+    <tr><td>سلامة الرفع</td><td><bdi>upload.result</bdi> أول محاولة</td><td>≥ 95%</td><td>مراجعة عقد <bdi>FHIR</bdi> مع النظام المستهدف</td></tr>
+    <tr><td>الأمان</td><td>خروج بيانات دون اعتماد</td><td>صفر مطلق</td><td>إيقاف التجربة فوراً</td></tr>
+  </table>
+  <div class="pr"><b>قاعدة القرار:</b> اجتياز العتبات كلها = فتح البيع لـ5–10 منشآت (<bdi>SOM</bdi> في <bdi>DOC-02</bdi>) وقفل الأسعار في <bdi>DOC-09</bdi>. فشل أي عتبة = دورة تصحيح وإعادة قياس قبل أي توسع — لا استثناءات.</div>
+  <div class="locked"><b>مقفول:</b> لا بيع قبل اجتياز التجربة · خط الأساس يُقاس قبل التشغيل · عتبة الأمان صفرية.</div>
+</section>
+
+<div class="approve"><p>التالية: <b><bdi>DOC-18</bdi> — خطة السبرنتات</b>.</p></div>
+<footer>Medify · DOC-17 · الإصدار 1.0</footer>
+</div></body></html>

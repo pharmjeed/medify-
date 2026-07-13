@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-02 — وثيقة المشكلة والسوق | Medify</title>
+<style>
+  :root{
+    --ink:#0f2233; --teal:#0e7c86; --teal-dark:#0a5c64; --sky:#eaf6f7;
+    --line:#d7e3e8; --gold:#c9a227; --muted:#5b7280; --bg:#f7fafb; --white:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+  .page{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+  header.doc{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:#fff;border-radius:14px;padding:36px 32px;margin-bottom:28px}
+  header.doc .kicker{font-size:13px;letter-spacing:1px;opacity:.85}
+  header.doc h1{font-size:30px;margin:6px 0 4px}
+  header.doc .sub{font-size:15px;opacity:.9}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+  .status{background:var(--gold)!important;color:#3a2c00;border-color:transparent!important;font-weight:700}
+  section{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:26px 28px;margin-bottom:18px}
+  h2{color:var(--teal-dark);font-size:20px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+  h2 .num{color:var(--gold);margin-inline-end:6px}
+  h3{font-size:16px;color:var(--ink);margin:16px 0 6px}
+  p{margin-bottom:10px}
+  ul,ol{margin:6px 24px 12px 0}
+  li{margin-bottom:6px}
+  bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,"Segoe UI",monospace;font-size:.95em;color:var(--teal-dark)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14.5px}
+  th{background:var(--sky);color:var(--teal-dark);padding:9px 12px;text-align:right;border:1px solid var(--line)}
+  td{padding:9px 12px;border:1px solid var(--line);vertical-align:top}
+  .locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:14px 18px;margin:10px 0}
+  .locked b{color:#7a6410}
+  .verify{background:#fdf1f1;border:1px solid #eecaca;border-radius:10px;padding:14px 18px;margin:10px 0}
+  .verify b{color:#a33}
+  .principle{border-inline-start:4px solid var(--teal);background:var(--sky);border-radius:8px;padding:12px 16px;margin:10px 0}
+  .kpi{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0}
+  .kpi div{flex:1;min-width:160px;background:var(--sky);border-radius:10px;padding:14px;text-align:center}
+  .kpi .n{font-size:24px;font-weight:800;color:var(--teal-dark)}
+  .kpi .l{font-size:13px;color:var(--muted)}
+  footer{margin-top:30px;text-align:center;color:var(--muted);font-size:13px}
+  .approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:18px 22px;text-align:center;font-size:15px;margin-top:24px}
+  .approve b{color:var(--teal-dark)}
+  .src{font-size:13px;color:var(--muted)}
+  .src a{color:var(--teal-dark)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 2 من 19 · مبنية على DOC-01 (الإصدار 1.4 — معتمدة)</div>
+  <h1>DOC-02 — وثيقة المشكلة والسوق</h1>
+  <div class="sub">إثبات أن المشكلة حقيقية ومكلفة وقابلة للقياس، وأن السوق السعودي جاهز ومفتوح للتموضع الذي حددته <bdi>DOC-01</bdi>. لا تُبدأ <bdi>DOC-03</bdi> (<bdi>PRD</bdi>) قبل اعتماد هذه الوثيقة.</div>
+  <div class="meta">
+    <span>الإصدار: 1.0</span>
+    <span>التاريخ: 2026-07-06</span>
+    <span class="status" style="background:#2e9e5b!important;color:#fff">الحالة: معتمدة ✓</span>
+    <span>المالك: عبدالمجيد التركي</span>
+  </div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> المشكلة — ثلاث طبقات ألم مترابطة</h2>
+
+  <h3>الطبقة الأولى: الدكتور — عبء التوثيق</h3>
+  <p>الاستشارة تجري بالعربية ولهجاتها، والتوثيق مطلوب بالإنجليزية المهيكلة وبترميز معياري. النتيجة: وقت شاشة يزاحم وقت المريض، توثيق يُستكمل بعد الدوام، وملاحظات مختصرة تُضعف جودة الملف الطبي وتفتح باب الرفض التأميني. الدكتور يقوم اليوم بثلاث وظائف في آن: مترجم، وكاتب، ومرمّز.</p>
+
+  <h3>الطبقة الثانية: المنشأة — تسرب الإيرادات</h3>
+  <p>كل نقص توثيقي أو خطأ ترميزي يتحول إلى: رفض مطالبة، أو دفع منقوص، أو دورة إعادة تقديم مكلفة. ومع مبدأ المرجعية الإثباتية الحصرية في <bdi>Nafais</bdi> (البند 4-11)، أصبح التوثيق المصدري هو الإثبات الوحيد المقبول — أي أن جودة التوثيق صارت مسألة تدفق نقدي مباشر للمنشأة، والأدمن (ممثلها) هو من يدفع ثمن ضعفها.</p>
+
+  <h3>الطبقة الثالثة: النظام — إلزامية التحول الرقمي</h3>
+  <p>التكامل مع <bdi>NPHIES</bdi> إلزامي لتدفق الإيرادات، و<bdi>PDPL</bdi> يفرض حوكمة صارمة على بيانات المرضى، والترميز المعتمد (<bdi>ICD-10-AM</bdi>/<bdi>ACHI</bdi>/<bdi>SBS</bdi>) يتطلب دقة لا توفرها الكتابة اليدوية المتعجلة. المنشآت مطالبة بالامتثال دون أدوات تجعله ممكناً من داخل غرفة الكشف نفسها.</p>
+
+  <div class="principle"><b>جوهر المشكلة في جملة:</b> لا توجد اليوم أداة تحوّل المحادثة العربية داخل العيادة إلى ملخص <bdi>SOAP</bdi> مرمّز بنظام ترميز المستشفى المعتمد، مبني على ملف المريض التاريخي، وجاهز للرفع — في جلسة واحدة وباعتماد بشري واحد.</div>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> حجم السوق — الأرقام الموثقة</h2>
+  <div class="kpi">
+    <div><div class="n">499</div><div class="l">مستشفى في المملكة (منها 150 خاصاً)</div></div>
+    <div><div class="n">~130 ألف</div><div class="l">طبيب (2024، نمو سنوي <bdi>+14.5%</bdi>)</div></div>
+    <div><div class="n">$152B</div><div class="l">حجم سوق الرعاية الصحية المتوقع 2026</div></div>
+    <div><div class="n">9.35%</div><div class="l">نمو سنوي مركب حتى 2032</div></div>
+  </div>
+
+  <h3>تقدير الطبقات</h3>
+  <table>
+    <tr><th>الطبقة</th><th>التعريف</th><th>التقدير المبدئي</th></tr>
+    <tr><td><b><bdi>TAM</bdi></b></td><td>كل طبيب يوثّق زيارات في المملكة</td><td>~130 ألف مقعد محتمل</td></tr>
+    <tr><td><b><bdi>SAM</bdi></b></td><td>القطاع الخاص أولاً (150 مستشفى + المجمعات الطبية الخاصة) حيث قرار الشراء أسرع وألم الرفض التأميني مباشر</td><td>عشرات الآلاف من المقاعد (يتطلب حصراً دقيقاً لعدد أطباء القطاع الخاص)</td></tr>
+    <tr><td><b><bdi>SOM</bdi></b> (سنة أولى)</td><td>مجمعات ومستشفيات خاصة صغيرة/متوسطة في الرياض وجدة والدمام تقبل التبني المبكر</td><td>عيادة تجريبية واحدة ← 5–10 منشآت ← مئات المقاعد</td></tr>
+  </table>
+
+  <div class="verify"><b>بنود بحاجة لتحقق ميداني قبل الفوترة (<bdi>DOC-09</bdi>):</b> نسبة رفض المطالبات الفعلية لأسباب توثيقية/ترميزية في السوق السعودي (لم تتوفر إحصائية رسمية منشورة أثناء البحث) · عدد أطباء القطاع الخاص تحديداً · متوسط الزيارات اليومية للدكتور الواحد · استعداد الدفع الفعلي للمقعد الواحد. لا تُبنى معادلة تسعير على أرقام غير متحقق منها — وفق مبدأ «التحقق قبل الالتزام».</div>
+</section>
+
+<section>
+  <h2><span class="num">٣</span> لماذا الآن — نافذة التوقيت</h2>
+  <ul>
+    <li><b>البنية التنظيمية اكتملت للتو:</b> <bdi>NPHIES</bdi> إلزامي، <bdi>Nafais</bdi> فعّلت المرجعية الإثباتية، <bdi>PDPL</bdi> نافذ — القواعد استقرت بما يكفي للبناء عليها، وحداثتها تعني أن أدوات الامتثال ما تزال ناقصة.</li>
+    <li><b>الإثبات العلمي للفئة حدث في السعودية:</b> دراسة <bdi>Sahl AI</bdi> مع تجمع الرياض الصحي الأول (700+ ساعة محادثات عربية، جودة ملاحظات 93% على <bdi>PDQI-9</bdi>) أثبتت جدوى الكاتب الذكي العربي سريرياً — الفئة لم تعد بحاجة لإثبات، بل لمن يكملها حتى الترميز والرفع.</li>
+    <li><b>رؤية 2030:</b> برنامج تحول القطاع الصحي يدفع تمويلاً وتبنياً مؤسسياً للحلول الرقمية والذكاء الاصطناعي التشخيصي والتشغيلي.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">٤</span> المشهد التنافسي التفصيلي</h2>
+  <table>
+    <tr><th>المنافس</th><th>ما يقدمه</th><th>نقاط قوته</th><th>فجوته أمام Medify</th></tr>
+    <tr><td><b><bdi>Sahl AI</bdi></b> (السعودية)</td><td>كاتب ذكي عربي↔إنجليزي</td><td>شراكة <bdi>R1</bdi> الحكومية، دراسة منشورة محكّمة، بيانات تدريب عربية ضخمة، واجهة تحرير <bdi>diff</bdi></td><td>يتوقف عند الملاحظة: لا إرشاد مبنياً على ملف المريض التاريخي، لا مطابقة ترميزية بنظام المستشفى قبل الرفع، إرشادات <bdi>NICE</bdi> غير موطّنة</td></tr>
+    <tr><td><b><bdi>OrbDoc / HealthOrbit</bdi></b></td><td>كاتب ذكي يسوّق توافقاً مع <bdi>NPHIES</bdi> ولهجات سعودية</td><td>تموضع تسويقي مبكر على كلمة <bdi>NPHIES</bdi></td><td>لا دليل منشور على عمق التكامل، لا إرشاد سريري من ملف المريض، لا بناء قوالب عكسياً</td></tr>
+    <tr><td><b><bdi>Plato Tech</bdi> / <bdi>AI4Docs</bdi></b> (خليجي)</td><td>توثيق ذكي ناشئ</td><td>قرب جغرافي وثقافي</td><td>لا ربط بين التوثيق والدورة المالية للمطالبة</td></tr>
+    <tr><td><b><bdi>Abridge</bdi> / <bdi>Ambience</bdi> / <bdi>Heidi</bdi> / <bdi>Nabla</bdi> / <bdi>Freed</bdi></b> (عالمي)</td><td>كتّاب أذكياء ناضجون</td><td>نضج منتج، تكاملات <bdi>EMR</bdi> واسعة، تمويل ضخم</td><td>لا عربية سريرية بلهجاتها، لا <bdi>NPHIES</bdi>، لا <bdi>PDPL</bdi>/إقامة بيانات محلية، ترميز أمريكي/أوروبي لا <bdi>ICD-10-AM</bdi></td></tr>
+  </table>
+  <p><b>الخلاصة التنافسية:</b> الجميع يتنافس على «تحويل الكلام إلى ملاحظة». لا أحد يملك الرحلة الكاملة المعتمدة في <bdi>DOC-01</bdi>: قالب (يُبنى عكسياً) ← <bdi>SOAP</bdi> ← إرشاد مدمج من ملف المريض بمصطلحات ترميز المستشفى ← تحرير كتابة/صوت/محادثة <bdi>AI</bdi> ← اعتماد ← رفع.</p>
+</section>
+
+<section>
+  <h2><span class="num">٥</span> شريحة الدخول ومسار التوسع</h2>
+  <ol>
+    <li><b>شريحة الدخول:</b> المجمعات الطبية والمستشفيات الخاصة الصغيرة/المتوسطة — دورة قرار قصيرة، أدمن واحد يمثل المنشأة، ألم الرفض التأميني مباشر وملموس.</li>
+    <li><b>التوسع الأول:</b> المستشفيات الخاصة الكبيرة (الـ150) عبر مرجعية العملاء الأوائل ولوحات الأثر.</li>
+    <li><b>التوسع الثاني:</b> التجمعات الصحية الحكومية — دورة أطول لكنها الأكبر حجماً (349 مستشفى حكومياً)، ويسبقها اكتمال <bdi>DOC-19</bdi> (تكامل <bdi>EMR/HIS</bdi>).</li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="num">٦</span> المخاطر السوقية والرد عليها</h2>
+  <table>
+    <tr><th>الخطر</th><th>الاحتمال/الأثر</th><th>الرد</th></tr>
+    <tr><td>تمدد <bdi>Sahl</bdi> نحو الترميز والمطالبات</td><td>وارد / مرتفع</td><td>السرعة في إغلاق شريحة الدخول + خندق الإرشاد المبني على ملف المريض (يتطلب عمق تكامل لا يُبنى سريعاً)</td></tr>
+    <tr><td>دخول عالمي (<bdi>Abridge</bdi>/<bdi>Microsoft</bdi>) للسعودية عبر شراكة محلية</td><td>متوسط / مرتفع</td><td>حاجز العربية السريرية + <bdi>PDPL</bdi> والإقامة المحلية + ترميز <bdi>ICD-10-AM</bdi> غير موجود في منتجاتهم</td></tr>
+    <tr><td>بطء تبني المنشآت الصغيرة للأدوات الذكية</td><td>متوسط / متوسط</td><td>نموذج العيادة التجريبية الواحدة قبل أي توسع (معيار نجاح <bdi>DOC-01</bdi>) وتسعير بالمقعد يخفض عتبة الدخول</td></tr>
+    <tr><td>تغير تنظيمي (<bdi>SFDA SaMD</bdi>، لوائح <bdi>CHI</bdi>)</td><td>منخفض / مرتفع</td><td>الامتثال مدمج من اليوم الأول (مبدأ حاكم في <bdi>DOC-01</bdi>) وصفة <bdi>Integrator</bdi> مسار أخف تنظيمياً</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٧</span> فرضيات يجب إثباتها قبل الإطلاق التجاري</h2>
+  <ol>
+    <li>الدكتور يقبل مراجعة الإرشاد المدمج واعتماد الملخص في أقل من دقيقتين لكل زيارة.</li>
+    <li>الإرشاد الترميزي المضمّن يخفض أخطاء الترميز قياساً بخط أساس المنشأة التجريبية.</li>
+    <li>الأدمن يرى في تقليل الرفض/إعادة التقديم قيمة تبرر سعر المقعد.</li>
+    <li>البناء العكسي للقوالب يرفع الالتزام اليومي بالاستخدام (لا هجران بعد الأسبوع الأول).</li>
+  </ol>
+  <p>كل فرضية تُختبر في العيادة التجريبية الأولى، ونتائجها تغذي <bdi>DOC-03</bdi> (<bdi>PRD</bdi>) و<bdi>DOC-09</bdi> (الفوترة).</p>
+</section>
+
+<section>
+  <h2><span class="num">٨</span> المراجع</h2>
+  <p class="src">
+    الأرقام السوقية: <a href="https://www.marknteladvisors.com/research-library/saudi-arabia-healthcare-market-report.html">MarkNtel — Saudi Arabia Healthcare Market</a> · <a href="https://www.ussaudi.org/wp-content/uploads/2025/01/Saudi-Healthcare-Sector-2025.pdf">US-Saudi Business Council — Saudi Healthcare 2025</a> · <a href="https://www.stats.gov.sa/documents/20117/2435273/Healthcare+Establishments+and+Workforce+Statistics+Publication+2024+EN+(1).pdf">GASTAT — Healthcare Establishments & Workforce 2024</a><br>
+    المنافس الرئيس: <a href="https://medinform.jmir.org/2026/1/e83335">JMIR Medical Informatics — Bilingual Arabic-English Ambient AI Scribe (2026)</a> · <a href="https://startuprise.org/sahl-ai-partners-with-riyadh-first-health-cluster/">Sahl AI × Riyadh First Health Cluster</a> · <a href="https://sahl.ai/">sahl.ai</a> · <a href="https://orbdoc.com/regions/saudi-arabia/">OrbDoc — Saudi Arabia</a>
+  </p>
+</section>
+
+<div class="approve">
+  <p>باعتماد هذه الوثيقة تُفتح <b><bdi>DOC-03</bdi> — وثيقة متطلبات المنتج <bdi>PRD</bdi></b>.</p>
+  <p>للاعتماد: <b>«اعتمد»</b> — أو اطلب تعديلات محددة.</p>
+</div>
+
+<footer>Medify · DOC-02 · الإصدار 1.0 · مصدر الحقيقة الوحيد لهذه المرحلة بعد الاعتماد</footer>
+</div>
+</body>
+</html>

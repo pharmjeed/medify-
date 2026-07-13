@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-09 — الفوترة والاشتراكات | Medify</title>
+<style>
+:root{--ink:#0f2233;--teal:#0e7c86;--td:#0a5c64;--sky:#eaf6f7;--line:#d7e3e8;--gold:#c9a227;--muted:#5b7280;--bg:#f7fafb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+.page{max-width:940px;margin:0 auto;padding:32px 24px 80px}
+header.doc{background:linear-gradient(135deg,var(--td),var(--teal));color:#fff;border-radius:14px;padding:34px 30px;margin-bottom:26px}
+.kicker{font-size:13px;opacity:.85}h1{font-size:28px;margin:6px 0 4px}.sub{font-size:15px;opacity:.9}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+.status{background:var(--gold)!important;color:#3a2c00;font-weight:700}
+section{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px 26px;margin-bottom:16px}
+h2{color:var(--td);font-size:19px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+h2 .num{color:var(--gold);margin-inline-end:6px}
+p{margin-bottom:10px}ul{margin:6px 24px 12px 0}li{margin-bottom:6px}
+bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,monospace;font-size:.93em;color:var(--td)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+th{background:var(--sky);color:var(--td);padding:7px 10px;text-align:right;border:1px solid var(--line)}
+td{padding:6px 10px;border:1px solid var(--line);vertical-align:top}
+.locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:13px 17px;margin:10px 0}.locked b{color:#7a6410}
+.verify{background:#fdf1f1;border:1px solid #eecaca;border-radius:10px;padding:13px 17px;margin:10px 0}.verify b{color:#a33}
+footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+.approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:16px 20px;text-align:center;font-size:15px;margin-top:22px}
+</style>
+</head>
+<body><div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 9 من 19 · مبنية على DOC-01/02/03/04 (معتمدة)</div>
+  <h1>DOC-09 — الفوترة والاشتراكات</h1>
+  <div class="sub">نموذج المقعد لكل دكتور، دورات الفوترة، ودورة حياة المقعد. الأسعار النهائية تُقفل بعد تحقق <bdi>DOC-02</bdi> الميداني.</div>
+  <div class="meta"><span>الإصدار: 1.0</span><span>التاريخ: 2026-07-06</span><span class="status">الحالة: بانتظار الاعتماد</span><span>المالك: عبدالمجيد التركي</span></div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> النموذج</h2>
+  <ul>
+    <li><b>الوحدة:</b> مقعد شهري/سنوي لكل دكتور نشط، يشتريه الأدمن (قرار مقفول <bdi>DOC-01</bdi>).</li>
+    <li><b>الخطط:</b> شهرية · سنوية (بخصم يشجع الالتزام — نسبته تُقفل مع الأسعار).</li>
+    <li><b>تجربة:</b> فترة تجريبية 30 يوماً لمنشأة جديدة بحد 3 مقاعد — تخدم بروتوكول العيادة التجريبية (<bdi>DOC-17</bdi>).</li>
+    <li><b>الضريبة:</b> <bdi>VAT 15%</bdi> تُعرض مفصولة في كل فاتورة.</li>
+    <li><b>العملة:</b> ريال سعودي حصراً.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> دورة حياة المقعد</h2>
+  <table>
+    <tr><th>الحدث</th><th>الأثر الفوري</th><th>الأثر المالي</th></tr>
+    <tr><td>توسعة مقاعد (<bdi>FR-102</bdi>)</td><td>فوري — يمكن إنشاء دكاترة فوراً</td><td>تناسبي (<bdi>prorated</bdi>) حتى نهاية الدورة</td></tr>
+    <tr><td>تقليص مقاعد</td><td>يُطبق بداية الدورة التالية</td><td>لا استرداد داخل الدورة</td></tr>
+    <tr><td>تعطيل دكتور (<bdi>FR-203</bdi>)</td><td>المقعد يتحرر لدكتور آخر فوراً</td><td>لا تغيير — المقعد مملوك للمنشأة لا للشخص</td></tr>
+    <tr><td>تعثر سداد</td><td>تذكير يومان ← تعليق إنشاء زيارات جديدة يوم 10 ← تعليق كامل يوم 30</td><td>البيانات محفوظة 90 يوماً بعد التعليق ثم تُصدَّر وتُحذف وفق <bdi>PDPL</bdi></td></tr>
+  </table>
+  <p>كل الأحداث تُسجل في <bdi>seat_events</bdi> (<bdi>DOC-04</bdi>) وتظهر في فاتورة الدورة.</p>
+</section>
+
+<section>
+  <h2><span class="num">٣</span> مزود الدفع</h2>
+  <p>مرشحان محليان يدعمان الفوترة المتكررة بالريال (مثل <bdi>Moyasar</bdi> / <bdi>Tap</bdi>). <b>وفق مبدأ «التحقق قبل الالتزام»:</b> يُختبر مزود واحد بعملية اشتراك حقيقية كاملة (إنشاء، توسعة تناسبية، فشل سداد، استرداد) قبل قفله هنا بإصدار لاحق. لا تكامل مزدوج في الإطلاق الأول.</p>
+</section>
+
+<section>
+  <h2><span class="num">٤</span> ما يُقفل لاحقاً — بعد التحقق الميداني</h2>
+  <div class="verify"><b>معلّق على بيانات العيادة التجريبية (<bdi>DOC-02</bdi> §٢ و§٧):</b> سعر المقعد الشهري/السنوي · نسبة خصم السنوي · حدود استهلاك عادل لدقائق التفريغ إن لزم. القاعدة التوجيهية للتسعير عند التحقق: أن يسترد المقعد كلفته إن منع رفض مطالبة واحدة متوسطة شهرياً أو وفّر ساعة توثيق يومياً.</div>
+  <div class="locked"><b>مقفول:</b> الوحدة = مقعد دكتور يشتريه الأدمن · لا تسعير بالاستخدام كوحدة أساسية · <bdi>VAT</bdi> مفصولة · مزود دفع واحد بعد اختبار حقيقي.</div>
+</section>
+
+<div class="approve"><p>التالية: <b><bdi>DOC-10</bdi> — الواجهات التخطيطية المرقّمة</b>.</p></div>
+<footer>Medify · DOC-09 · الإصدار 1.0</footer>
+</div></body></html>

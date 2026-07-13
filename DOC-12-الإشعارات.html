@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-12 — الإشعارات | Medify</title>
+<style>
+:root{--ink:#0f2233;--teal:#0e7c86;--td:#0a5c64;--sky:#eaf6f7;--line:#d7e3e8;--gold:#c9a227;--muted:#5b7280;--bg:#f7fafb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+.page{max-width:940px;margin:0 auto;padding:32px 24px 80px}
+header.doc{background:linear-gradient(135deg,var(--td),var(--teal));color:#fff;border-radius:14px;padding:34px 30px;margin-bottom:26px}
+.kicker{font-size:13px;opacity:.85}h1{font-size:28px;margin:6px 0 4px}.sub{font-size:15px;opacity:.9}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+.status{background:var(--gold)!important;color:#3a2c00;font-weight:700}
+section{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px 26px;margin-bottom:16px}
+h2{color:var(--td);font-size:19px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+h2 .num{color:var(--gold);margin-inline-end:6px}
+p{margin-bottom:10px}ul{margin:6px 24px 12px 0}li{margin-bottom:6px}
+bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,monospace;font-size:.93em;color:var(--td)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+th{background:var(--sky);color:var(--td);padding:7px 10px;text-align:right;border:1px solid var(--line)}
+td{padding:6px 10px;border:1px solid var(--line);vertical-align:top}
+td.k{white-space:nowrap;font-family:Consolas,monospace;direction:ltr;text-align:left;font-size:12px;color:var(--td);font-weight:600}
+.locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:13px 17px;margin:10px 0}.locked b{color:#7a6410}
+footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+.approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:16px 20px;text-align:center;font-size:15px;margin-top:22px}
+</style>
+</head>
+<body><div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 12 من 19 · مبنية على DOC-03/04/05 (معتمدة)</div>
+  <h1>DOC-12 — الإشعارات</h1>
+  <div class="sub">قائمة الأحداث حصرية. القنوات: داخل التطبيق (أساس) + بريد (للحرجة). لا <bdi>SMS</bdi> في الإطلاق الأول.</div>
+  <div class="meta"><span>الإصدار: 1.0</span><span>التاريخ: 2026-07-06</span><span class="status">الحالة: بانتظار الاعتماد</span><span>المالك: عبدالمجيد التركي</span></div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> إشعارات الدكتور</h2>
+  <table>
+    <tr><th>المفتاح</th><th>الحدث</th><th>القناة</th><th>الأولوية</th></tr>
+    <tr><td class="k">dr.summary_ready</td><td>اكتمل توليد الملخص والإرشاد (زيارة تركها قيد المعالجة)</td><td>تطبيق</td><td>عادية</td></tr>
+    <tr><td class="k">dr.analysis_failed</td><td>فشل التحليل — الملخص متاح بلا إرشادات (<bdi>MDF-5033</bdi>)</td><td>تطبيق</td><td>مهمة</td></tr>
+    <tr><td class="k">dr.upload_success</td><td>تأكيد رفع الزيارة لنظام المستشفى</td><td>تطبيق</td><td>عادية</td></tr>
+    <tr><td class="k">dr.upload_failed</td><td>فشل نهائي للرفع بعد المحاولات الآلية (<bdi>FR-805</bdi>)</td><td>تطبيق + بريد</td><td>حرجة</td></tr>
+    <tr><td class="k">dr.safety_flag</td><td>إرشاد سلامة مريض عالي الحساسية بانتظار الحسم (<bdi>DOC-08</bdi> §٣)</td><td>تطبيق</td><td>حرجة</td></tr>
+    <tr><td class="k">dr.password_reset</td><td>الأدمن أعاد تعيين كلمة مرورك</td><td>تطبيق</td><td>مهمة</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> إشعارات الأدمن</h2>
+  <table>
+    <tr><th>المفتاح</th><th>الحدث</th><th>القناة</th><th>الأولوية</th></tr>
+    <tr><td class="k">ad.upload_failed</td><td>فشل رفع نهائي لأي زيارة (عداد — دون محتوى سريري)</td><td>تطبيق + بريد</td><td>حرجة</td></tr>
+    <tr><td class="k">ad.integration_down</td><td>فشل اختبار الاتصال الدوري بنظام المستشفى (<bdi>MDF-5052</bdi>)</td><td>تطبيق + بريد</td><td>حرجة</td></tr>
+    <tr><td class="k">ad.seats_exhausted</td><td>محاولة إنشاء دكتور بلا مقاعد متاحة (<bdi>MDF-4221</bdi>)</td><td>تطبيق</td><td>مهمة</td></tr>
+    <tr><td class="k">ad.payment_failed</td><td>تعثر سداد — بدء تسلسل <bdi>DOC-09</bdi> §٢</td><td>تطبيق + بريد</td><td>حرجة</td></tr>
+    <tr><td class="k">ad.renewal_upcoming</td><td>تجديد الاشتراك خلال 14 يوماً</td><td>تطبيق + بريد</td><td>عادية</td></tr>
+    <tr><td class="k">ad.retention_purge</td><td>تقرير الحذف الآلي الدوري للتسجيلات (سياسة الاحتفاظ)</td><td>تطبيق</td><td>عادية</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٣</span> قواعد</h2>
+  <ul>
+    <li>لا محتوى سريري نصي في أي إشعار — المعرفات فقط (رقم زيارة، اسم دكتور للأدمن).</li>
+    <li>كل إشعار يحمل إجراءً واحداً واضحاً (رابط الشاشة المعنية من <bdi>DOC-10</bdi>).</li>
+    <li>التخزين في جدول <bdi>notifications</bdi> (<bdi>DOC-04</bdi>) مع <bdi>read_at</bdi>؛ الحرجة تبقى حتى تُقرأ.</li>
+    <li>البريد قالب <bdi>RTL</bdi> عربي موحد من نظام التصميم، دون تفاصيل حساسة.</li>
+  </ul>
+  <div class="locked"><b>مقفول:</b> 12 حدثاً لا غير · قناتان · لا محتوى سريري في الإشعارات.</div>
+</section>
+
+<div class="approve"><p>التالية: <b><bdi>DOC-13</bdi> — رموز الأخطاء</b>.</p></div>
+<footer>Medify · DOC-12 · الإصدار 1.0</footer>
+</div></body></html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-01 — وثيقة الرؤية والسياق | Medify</title>
+<style>
+  :root{
+    --ink:#0f2233; --teal:#0e7c86; --teal-dark:#0a5c64; --sky:#eaf6f7;
+    --line:#d7e3e8; --gold:#c9a227; --muted:#5b7280; --bg:#f7fafb; --white:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+  .page{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+  header.doc{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:#fff;border-radius:14px;padding:36px 32px;margin-bottom:28px}
+  header.doc .kicker{font-size:13px;letter-spacing:1px;opacity:.85}
+  header.doc h1{font-size:30px;margin:6px 0 4px}
+  header.doc .sub{font-size:15px;opacity:.9}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+  .status{background:var(--gold)!important;color:#3a2c00;border-color:transparent!important;font-weight:700}
+  section{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:26px 28px;margin-bottom:18px}
+  h2{color:var(--teal-dark);font-size:20px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+  h2 .num{color:var(--gold);margin-inline-end:6px}
+  h3{font-size:16px;color:var(--ink);margin:16px 0 6px}
+  p{margin-bottom:10px}
+  ul,ol{margin:6px 24px 12px 0}
+  li{margin-bottom:6px}
+  bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,"Segoe UI",monospace;font-size:.95em;color:var(--teal-dark)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14.5px}
+  th{background:var(--sky);color:var(--teal-dark);padding:9px 12px;text-align:right;border:1px solid var(--line)}
+  td{padding:9px 12px;border:1px solid var(--line);vertical-align:top}
+  .locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:14px 18px;margin:10px 0}
+  .locked b{color:#7a6410}
+  .in{color:#0a7a3d;font-weight:700}
+  .out{color:#b02a2a;font-weight:700}
+  .principle{border-inline-start:4px solid var(--teal);background:var(--sky);border-radius:8px;padding:12px 16px;margin:10px 0}
+  footer{margin-top:30px;text-align:center;color:var(--muted);font-size:13px}
+  .approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:18px 22px;text-align:center;font-size:15px;margin-top:24px}
+  .approve b{color:var(--teal-dark)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 1 من 19</div>
+  <h1>DOC-01 — وثيقة الرؤية والسياق</h1>
+  <div class="sub">الأساس الذي تُبنى عليه كل الوثائق اللاحقة. لا تُبدأ <bdi>DOC-02</bdi> (المشكلة والسوق) قبل اعتماد هذه الوثيقة صراحة.</div>
+  <div class="meta">
+    <span>الإصدار: 1.4</span>
+    <span>التاريخ: 2026-07-06</span>
+    <span class="status" style="background:#2e9e5b!important;color:#fff">الحالة: معتمدة ✓</span>
+    <span>المالك: عبدالمجيد التركي</span>
+  </div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> بيان الرؤية</h2>
+  <p>أن يصبح Medify البنية التوثيقية الذكية المعيارية للرعاية الصحية في المملكة العربية السعودية: كل استشارة سريرية تتحول — أثناء حدوثها — إلى ملخص <bdi>SOAP</bdi> مهيكل بإرشاد سريري وترميزي مدمج، جاهز للرفع لملف المريض في نظام المستشفى، دون أن يلمس الدكتور لوحة مفاتيح، ودون أن تغادر أي بيانات النظام قبل اعتماد بشري صريح.</p>
+  <p><b>بيان المنتج في سطر واحد:</b> منصة كاتب طبي ذكي محيطي (<bdi>Ambient AI Medical Scribe</bdi>) ثنائية اللغة (عربي/إنجليزي)، تستمع للاستشارة، تلخّصها بنظام <bdi>SOAP</bdi> وفق قالب يختاره الدكتور، تحلّلها على ضوء ملف المريض بإرشاد مدمج (تشخيص/أدوية/إجراءات + مطابقة ترميزية)، وترفع بيانات الزيارة إلى نظام المستشفى بصيغة متوافقة مع <bdi>FHIR/NPHIES</bdi> — عبر بوابة اعتماد بشري نهائية إلزامية.</p>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> لماذا الآن — سياق السوق السعودي</h2>
+  <ul>
+    <li><b>التحول الوطني الرقمي الصحي:</b> إلزامية التكامل مع <bdi>NPHIES</bdi> حوّلت التوثيق والترميز من عبء إداري إلى شرط وجودي لتدفق الإيرادات لدى مقدمي الرعاية.</li>
+    <li><b>منصة <bdi>Nafais</bdi>:</b> مبدأ المرجعية الإثباتية الحصرية (البند 4-11) يعيد تعريف ما يُعد إثباتاً صالحاً للخدمة المقدمة — ما يجعل جودة التوثيق المصدري مسألة تعاقدية ومالية، لا مهنية فقط.</li>
+    <li><b>فجوة اللغة:</b> الاستشارة تجري بالعربية (ولهجاتها) بينما التوثيق والترميز والمطالبات بالإنجليزية — الحلول العالمية (<bdi>Abridge</bdi>، <bdi>Heidi</bdi>، <bdi>Nabla</bdi>، <bdi>Freed</bdi>) لم تُبنَ لهذا الانقسام، والحلول المحلية لم تغلقه بعد.</li>
+    <li><b>ضغط الرفض التأميني:</b> رفض المطالبات لأسباب توثيقية/ترميزية بند خسارة مباشر للمنشأة — والأدمن (ممثلها) هو مشتري المنتج.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">٣</span> العميل والمستخدمون</h2>
+  <p>فئتا مستخدمين فقط، لا ثالث لهما:</p>
+  <table>
+    <tr><th>الدور</th><th>الوصف</th><th>علاقته بالمنتج</th></tr>
+    <tr><td><b>الأدمن</b> (المشتري والمدير)</td><td>ممثل المنشأة (مستشفى/مجمع طبي)</td><td>يشتري الاشتراك ويحدد عدد مقاعد الدكاترة عند التسجيل ويوسّعها لاحقاً · ينشئ حسابات الدكاترة (الاسم، كلمة المرور، التخصص، العيادة) · يحدد نظام الترميز الطبي المعتمد لدى المستشفى ويدير الربط مع نظام المستشفى · يتابع لوحات الاستخدام والأثر</td></tr>
+    <tr><td><b>الدكتور</b> (المستخدم اليومي)</td><td>طبيب مرخص من <bdi>SCFHS</bdi></td><td>يختار قالب التلخيص قبل التسجيل · يسجّل الاستشارة · يراجع ملخص <bdi>SOAP</bdi> بالإرشاد المدمج (السريري + الترميزي) المبني على ملف المريض وكلام الزيارة · يعدّل أي فقرة كتابةً أو صوتاً أو عبر محادثة <bdi>AI</bdi> الختامية · يعتمد عند البوابة النهائية فتُرفع الزيارة لملف المريض في نظام المستشفى</td></tr>
+  </table>
+  <p><b>القرار الحاسم:</b> Medify يُباع للمنشأة عبر الأدمن لا للطبيب الفرد — قناة البيع والتسعير ولوحات القيمة كلها مصممة للأدمن، وتجربة الاستخدام اليومية كلها مصممة للدكتور.</p>
+</section>
+
+<section>
+  <h2><span class="num">٤</span> تدفق القيمة الجوهري</h2>
+  <p>رحلة واحدة متتابعة بشريط تقدم دائم، بنمط الكشف التدريجي متعدد الشاشات:</p>
+  <p style="text-align:center;font-weight:700;color:var(--teal-dark);background:var(--sky);border-radius:8px;padding:12px">اختيار القالب ← تسجيل ← تفريغ فوري ← ملخص <bdi>SOAP</bdi> ← إرشاد ذكي مدمج ← تحرير واعتماد ← رفع لنظام المستشفى</p>
+  <ol>
+    <li><b>اختيار القالب قبل التسجيل:</b> الدكتور يختار قالب التلخيص المناسب للتخصص/نوع الزيارة. ويستطيع <b>بناء قوالب جديدة عكسياً</b>: يكتب في المنصة النص الذي يريده وطريقة تلخيصه، فيولّد له الـ<bdi>AI</bdi> قالباً جديداً قابلاً للحفظ وإعادة الاستخدام في الزيارات القادمة.</li>
+    <li><b>التفريغ الفوري:</b> إخراج نص المحادثة كاملاً أثناء الاستشارة عبر <bdi>WebSocket</bdi>.</li>
+    <li><b>التلخيص بنظام <bdi>SOAP</bdi>:</b> يُلخَّص الكلام وفق القالب المختار.</li>
+    <li><b>التحليل الذكي المدمج:</b> يعمل على مصدرين — ملف المريض السابق بما يحتويه + كلام الزيارة الحالية — ويظهر كطبقتي إرشاد <u>مضمّنتين مباشرة على فقرات الملخص</u> التي تحتاج إرشاداً:
+      <ul>
+        <li><b>الإرشاد السريري:</b> يساعد الدكتور في تحديد التشخيص والأدوية والإجراءات الطبية المناسبة للمريض.</li>
+        <li><b>المطابقة الترميزية:</b> تصاغ الإرشادات بنفس مصطلحات نظام الترميز الطبي المعتمد لدى المستشفى، بحيث يكون كل ما كُتب مطابقاً للترميز قبل الرفع.</li>
+      </ul>
+    </li>
+    <li><b>التحرير المرن:</b> كل فقرة من الملخص قابلة للتعديل كتابةً أو صوتاً.</li>
+    <li><b>محادثة <bdi>AI</bdi> ختامية:</b> في نهاية الملخص محادثة كاملة مع الذكاء الاصطناعي يكتب فيها الدكتور أي طلب فيعدّل النظام أي جزء من الملخص.</li>
+    <li><b>الاعتماد والرفع:</b> بوابة اعتماد بشري نهائية واحدة، ثم تُرفع بيانات الزيارة كاملة لملف المريض في نظام المستشفى.</li>
+  </ol>
+  <div class="locked"><b>قرار معتمد:</b> دمج التحليلين (السريري والترميزي) في مساحة مراجعة واحدة بإرشاد مضمّن على الفقرات — بدل مرحلتين منفصلتين — اختصاراً للعملية.</div>
+</section>
+
+<section>
+  <h2><span class="num">٥</span> نموذج العمل</h2>
+  <ul>
+    <li>اشتراك سنوي/شهري <b>بالمقعد لكل دكتور</b>، يحدده الأدمن عند التسجيل مع إمكانية التوسعة لاحقاً.</li>
+    <li>التموضع التنظيمي: مسجّل لدى <bdi>NPHIES</bdi> بصفة <b><bdi>Integrator</bdi></b> (مسار اعتماد أخف من <bdi>RCM</bdi> و<bdi>HIS</bdi>).</li>
+    <li>تفاصيل الباقات والفوترة تُحسم في <bdi>DOC-09</bdi> (الفوترة والاشتراكات) — خارج نطاق هذه الوثيقة.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">٦</span> نطاق الإطلاق الأول</h2>
+  <h3><span class="in">داخل النطاق</span></h3>
+  <ul>
+    <li>التفريغ الصوتي الفوري للاستشارات العربية عبر <bdi>WebSocket</bdi></li>
+    <li>قوالب تلخيص قابلة للاختيار قبل التسجيل، مع <b>البناء العكسي للقوالب</b> (نص مثال + طريقة التلخيص المرغوبة ← قالب مولّد بالـ<bdi>AI</bdi> قابل للحفظ وإعادة الاستخدام)، وملخص بنظام <bdi>SOAP</bdi></li>
+    <li>الإرشاد الذكي المدمج (سريري + ترميزي) المبني على ملف المريض وكلام الزيارة، بمصطلحات نظام الترميز المعتمد لدى المستشفى: <bdi>ICD-10-AM</bdi>، <bdi>ACHI</bdi>، <bdi>SBS</bdi>، <bdi>NDC</bdi></li>
+    <li>تحرير كل فقرة كتابةً أو صوتاً، ومحادثة <bdi>AI</bdi> ختامية لتعديل الملخص</li>
+    <li>الرفع المتوافق بنيوياً مع <bdi>FHIR/NPHIES</bdi> لملف المريض في نظام المستشفى</li>
+    <li>إدارة المنشأة متعددة العيادات مع عزل كامل للمستأجرين (<bdi>RLS</bdi>)</li>
+  </ul>
+  <h3><span class="out">خارج النطاق (مؤجل صراحة)</span></h3>
+  <ul>
+    <li>التكامل العميق ثنائي الاتجاه مع أنظمة <bdi>EMR/HIS</bdi> (له وثيقة مستقلة <bdi>DOC-19</bdi> ومرحلة لاحقة)</li>
+    <li>ميزة تتبع <bdi>CPD</bdi> المرتبطة بمتطلبات <bdi>SCFHS</bdi> (فرصة تموضع خالية من المنافسة — مرحلة ثانية)</li>
+    <li>مجتمع القوالب التشاركي، ولوحات <bdi>ROI</bdi> المتقدمة</li>
+    <li>أي سوق خارج المملكة العربية السعودية</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">٧</span> المبادئ الحاكمة (غير قابلة للتفاوض)</h2>
+  <div class="principle"><b>الإنسان يعتمد، الآلة تقترح:</b> الذكاء الاصطناعي يرشد ويقترح داخل مساحة المراجعة، ولا تغادر أي بيانات النظام قبل بوابة الاعتماد البشري النهائية.</div>
+  <div class="principle"><b>الامتثال من اليوم الأول:</b> <bdi>PDPL</bdi> والإقامة الجغرافية للبيانات داخل المملكة وعزل المستأجرين تُدمج في <bdi>ERD</bdi> نفسه، لا كطبقة لاحقة. سجل الامتثال يشمل: <bdi>NPHIES/FHIR</bdi>، <bdi>SFDA SaMD</bdi>، <bdi>CBAHI</bdi>، <bdi>Nafais</bdi>، مواد اللائحة التنفيذية <bdi>CHI</bdi> (90/91).</div>
+  <div class="principle"><b>عربي أولاً في التجربة، معياري أولاً في المخرجات:</b> واجهة <bdi>RTL</bdi> كاملة، ومخرجات ترميز وتصدير معيارية بالإنجليزية.</div>
+  <div class="principle"><b>الوثائق قبل الكود:</b> 19 وثيقة تُعتمد بالتسلسل قبل كتابة أي سطر كود.</div>
+</section>
+
+<section>
+  <h2><span class="num">٨</span> التموضع التنافسي المختصر</h2>
+  <table>
+    <tr><th>المنافس</th><th>موقعه</th><th>فجوته التي يملؤها Medify</th></tr>
+    <tr><td><bdi>Sahl AI</bdi></td><td>الأقوى محلياً (أدلة منشورة بمستشفيات مسماة)</td><td>لا إرشاد مبنياً على ملف المريض التاريخي، لا مطابقة ترميزية مضمّنة قبل الرفع، لا تصدير <bdi>NPHIES</bdi> ظاهر، إرشادات <bdi>NICE</bdi> غير موطّنة</td></tr>
+    <tr><td><bdi>OrbDoc</bdi> / <bdi>Plato</bdi> / <bdi>AI4Docs</bdi></td><td>خليجي/سعودي ناشئ</td><td>لا ربط بين التوثيق والدورة المالية للمطالبة</td></tr>
+    <tr><td><bdi>Abridge</bdi> / <bdi>Heidi</bdi> / <bdi>Nabla</bdi> / <bdi>Freed</bdi></td><td>عالمي ناضج</td><td>لا عربية سريرية، لا <bdi>NPHIES</bdi>، لا <bdi>PDPL</bdi></td></tr>
+  </table>
+  <p><b>خندق Medify:</b> الربط الكامل من الصوت العربي إلى ملخص <bdi>SOAP</bdi> مرمّز بإرشاد مدمج مبني على ملف المريض، مطابق لنظام الترميز المعتمد لدى المستشفى وجاهز للرفع المتوافق مع <bdi>NPHIES</bdi> — لا يقدمه أحد في السوق اليوم.</p>
+</section>
+
+<section>
+  <h2><span class="num">٩</span> القرارات المقفولة الموروثة</h2>
+  <div class="locked"><b>مقفول:</b> فئتا مستخدمين فقط: أدمن ودكاترة · العميل هو المنشأة عبر الأدمن لا الطبيب الفرد · التسعير بالمقعد · صفة <bdi>Integrator</bdi> لدى <bdi>NPHIES</bdi> · نمط الشاشات المتتابعة بشريط تقدم (لا شاشة واحدة متطورة) · مساحة مراجعة موحدة بإرشاد مدمج (سريري + ترميزي) على فقرات <bdi>SOAP</bdi> · بوابة اعتماد بشري نهائية إلزامية · الهوية البصرية بالمنحنى الصاعد غير المتماثل · المكدس: <bdi>Next.js 14</bdi> + <bdi>FastAPI</bdi> + <bdi>PostgreSQL</bdi> + <bdi>Claude API</bdi> + <bdi>Whisper</bdi>.</div>
+  <p>هذه القرارات لا تُعاد مناقشتها في الوثائق اللاحقة؛ تُبنى عليها فقط.</p>
+</section>
+
+<section>
+  <h2><span class="num">١٠</span> معايير نجاح المرحلة التأسيسية</h2>
+  <ol>
+    <li>اعتماد الوثائق الـ19 بالتسلسل دون رجوع لتعديل وثيقة معتمدة.</li>
+    <li>عيادة تجريبية واحدة حقيقية تكمل الرحلة كاملة (اختيار القالب ← الرفع لنظام المستشفى) قبل أي التزام توسعي.</li>
+    <li>ملخص <bdi>SOAP</bdi> يُعتمد بتعديلات بشرية طفيفة في أغلب الحالات، وبيانات زيارة تجتاز التحقق البنيوي لـ<bdi>NPHIES</bdi> من أول رفع.</li>
+    <li>صفر حوادث خروج بيانات دون اعتماد بشري.</li>
+  </ol>
+</section>
+
+<div class="approve">
+  <p>باعتماد هذه الوثيقة تُفتح <b><bdi>DOC-02</bdi> — وثيقة المشكلة والسوق</b>.</p>
+  <p>للاعتماد: <b>«اعتمد»</b> — أو اطلب تعديلات محددة.</p>
+</div>
+
+<footer>Medify · DOC-01 · الإصدار 1.4 · مصدر الحقيقة الوحيد لهذه المرحلة بعد الاعتماد</footer>
+</div>
+</body>
+</html>

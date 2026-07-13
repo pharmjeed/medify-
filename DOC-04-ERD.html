@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-04 — مخطط قاعدة البيانات ERD | Medify</title>
+<style>
+  :root{
+    --ink:#0f2233; --teal:#0e7c86; --teal-dark:#0a5c64; --sky:#eaf6f7;
+    --line:#d7e3e8; --gold:#c9a227; --muted:#5b7280; --bg:#f7fafb; --white:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+  .page{max-width:960px;margin:0 auto;padding:32px 24px 80px}
+  header.doc{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:#fff;border-radius:14px;padding:36px 32px;margin-bottom:28px}
+  header.doc .kicker{font-size:13px;letter-spacing:1px;opacity:.85}
+  header.doc h1{font-size:30px;margin:6px 0 4px}
+  header.doc .sub{font-size:15px;opacity:.9}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+  .status{background:var(--gold)!important;color:#3a2c00;border-color:transparent!important;font-weight:700}
+  section{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:26px 28px;margin-bottom:18px}
+  h2{color:var(--teal-dark);font-size:20px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+  h2 .num{color:var(--gold);margin-inline-end:6px}
+  h3{font-size:15.5px;color:var(--teal-dark);margin:18px 0 8px;background:var(--sky);padding:8px 14px;border-radius:8px}
+  p{margin-bottom:10px}
+  ul{margin:6px 24px 12px 0}
+  li{margin-bottom:6px}
+  bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,monospace;font-size:.93em;color:var(--teal-dark)}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+  th{background:var(--sky);color:var(--teal-dark);padding:7px 10px;text-align:right;border:1px solid var(--line)}
+  td{padding:6px 10px;border:1px solid var(--line);vertical-align:top}
+  td.c{white-space:nowrap;font-family:Consolas,monospace;direction:ltr;text-align:left;font-size:12.5px;color:var(--teal-dark);font-weight:600}
+  .pk{background:#fdf6df}
+  .fk{color:#8a5b00;font-weight:700}
+  .locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:14px 18px;margin:10px 0}
+  .locked b{color:#7a6410}
+  .principle{border-inline-start:4px solid var(--teal);background:var(--sky);border-radius:8px;padding:12px 16px;margin:10px 0}
+  .diagram{background:#0f2233;border-radius:12px;padding:18px;margin:14px 0;overflow-x:auto}
+  .diagram pre{color:#9fd8dd;font-family:Consolas,monospace;font-size:12.5px;line-height:1.7;direction:ltr;text-align:left}
+  footer{margin-top:30px;text-align:center;color:var(--muted);font-size:13px}
+  .approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:18px 22px;text-align:center;font-size:15px;margin-top:24px}
+  .approve b{color:var(--teal-dark)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 4 من 19 · مبنية على DOC-03 PRD (1.0 معتمدة)</div>
+  <h1>DOC-04 — مخطط قاعدة البيانات <bdi>ERD</bdi></h1>
+  <div class="sub">كل الجداول والعلاقات وسياسات العزل والأمان. <bdi>PostgreSQL</bdi> عبر <bdi>SQLAlchemy/Alembic</bdi>. لا جدول ولا عمود خارج هذه الوثيقة بعد اعتمادها.</div>
+  <div class="meta">
+    <span>الإصدار: 1.0</span>
+    <span>التاريخ: 2026-07-06</span>
+    <span class="status" style="background:#2e9e5b!important;color:#fff">الحالة: معتمدة ✓</span>
+    <span>المالك: عبدالمجيد التركي</span>
+  </div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> المبادئ المعمارية للبيانات</h2>
+  <div class="principle"><b>العزل أولاً:</b> كل جدول مستأجري يحمل <bdi>facility_id</bdi> إلزامياً، وسياسة <bdi>RLS</bdi> مفعّلة على كل جدول منها بلا استثناء — العزل يُنفَّذ في قاعدة البيانات لا في التطبيق فقط (<bdi>NFR-05</bdi>).</div>
+  <div class="principle"><b><bdi>PDPL</bdi> بالتصميم:</b> إقامة البيانات داخل المملكة، تشفير <bdi>AES-256</bdi> في التخزين، سياسة احتفاظ صريحة للتسجيلات الصوتية (<bdi>NFR-06</bdi>)، وجداول تدقيق غير قابلة للتعديل (<bdi>NFR-10</bdi>).</div>
+  <div class="principle"><b>قواعد عامة:</b> المفاتيح <bdi>UUID v7</bdi> · كل جدول يحمل <bdi>created_at</bdi> و<bdi>updated_at</bdi> (تُذكر مرة هنا ولا تتكرر أدناه) · حذف ناعم بـ<bdi>archived_at</bdi> حيث يُذكر · الأنواع الحساسة مشفّرة عموداً حيث يُشار.</div>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> الخريطة العامة للعلاقات</h2>
+  <div class="diagram"><pre>
+facilities ─1:N─ clinics
+facilities ─1:N─ users (admin | doctor)
+facilities ─1:1─ subscriptions ─1:N─ seat_events
+facilities ─1:1─ integration_configs
+facilities ─1:N─ coding_system_configs
+users(doctor) ─N:1─ clinics
+users(doctor) ─1:N─ templates (شخصية) ; facilities ─1:N─ templates (عامة)
+facilities ─1:N─ patients ─1:N─ patient_context_snapshots
+visits: N:1 → patients, users(doctor), clinics, templates
+visits ─1:1─ recordings ─1:1─ transcripts
+visits ─1:1─ summaries ─1:N─ summary_sections ─1:N─ guidance_items
+visits ─1:N─ edit_events        (كتابة | صوت | محادثة AI)
+visits ─1:1─ approvals ─1:1─ upload_jobs ─1:N─ upload_attempts
+facilities ─1:N─ audit_logs ; users ─1:N─ notifications
+  </pre></div>
+</section>
+
+<section>
+  <h2><span class="num">٣</span> جداول الهوية والاستئجار</h2>
+
+  <h3><bdi>facilities</bdi> — المنشآت (جذر الاستئجار)</h3>
+  <table>
+    <tr><th>العمود</th><th>النوع</th><th>ملاحظات</th></tr>
+    <tr class="pk"><td class="c">id</td><td class="c">uuid PK</td><td>معرف المنشأة = مفتاح العزل في كل النظام</td></tr>
+    <tr><td class="c">name</td><td class="c">text</td><td>اسم المنشأة</td></tr>
+    <tr><td class="c">commercial_reg</td><td class="c">text unique</td><td>السجل التجاري (<bdi>FR-101</bdi>)</td></tr>
+    <tr><td class="c">status</td><td class="c">enum</td><td><bdi>active | suspended | archived</bdi></td></tr>
+  </table>
+
+  <h3><bdi>users</bdi> — المستخدمون (الدوران الوحيدان)</h3>
+  <table>
+    <tr><th>العمود</th><th>النوع</th><th>ملاحظات</th></tr>
+    <tr class="pk"><td class="c">id</td><td class="c">uuid PK</td><td></td></tr>
+    <tr><td class="c">facility_id</td><td class="c">uuid FK</td><td class="fk">→ facilities · عليه RLS</td></tr>
+    <tr><td class="c">role</td><td class="c">enum</td><td><bdi>admin | doctor</bdi> — قيد <bdi>CHECK</bdi>، لا دور ثالث (قرار مقفول)</td></tr>
+    <tr><td class="c">full_name</td><td class="c">text</td><td></td></tr>
+    <tr><td class="c">username</td><td class="c">text</td><td>فريد داخل المنشأة (<bdi>unique(facility_id, username)</bdi>)</td></tr>
+    <tr><td class="c">password_hash</td><td class="c">text</td><td><bdi>argon2id</bdi></td></tr>
+    <tr><td class="c">specialty</td><td class="c">text null</td><td>للدكتور فقط (<bdi>FR-202</bdi>)</td></tr>
+    <tr><td class="c">clinic_id</td><td class="c">uuid FK null</td><td class="fk">→ clinics · للدكتور فقط</td></tr>
+    <tr><td class="c">is_active</td><td class="c">bool</td><td>التعطيل يحرر المقعد (<bdi>FR-203</bdi>)</td></tr>
+  </table>
+
+  <h3><bdi>clinics</bdi> — العيادات</h3>
+  <table>
+    <tr><th>العمود</th><th>النوع</th><th>ملاحظات</th></tr>
+    <tr class="pk"><td class="c">id</td><td class="c">uuid PK</td><td></td></tr>
+    <tr><td class="c">facility_id</td><td class="c">uuid FK</td><td class="fk">→ facilities · RLS</td></tr>
+    <tr><td class="c">name</td><td class="c">text</td><td></td></tr>
+    <tr><td class="c">archived_at</td><td class="c">timestamptz null</td><td>أرشفة (<bdi>FR-201</bdi>)</td></tr>
+  </table>
+
+  <h3><bdi>subscriptions</bdi> و <bdi>seat_events</bdi> — الاشتراك والمقاعد</h3>
+  <table>
+    <tr><th>العمود</th><th>النوع</th><th>ملاحظات</th></tr>
+    <tr class="pk"><td class="c">id</td><td class="c">uuid PK</td><td><bdi>subscriptions</bdi>: واحد لكل منشأة (<bdi>unique(facility_id)</bdi>)</td></tr>
+    <tr><td class="c">facility_id</td><td class="c">uuid FK</td><td class="fk">→ facilities · RLS</td></tr>
+    <tr><td class="c">seats_total</td><td class="c">int</td><td>المقاعد المشتراة (<bdi>FR-102</bdi>)</td></tr>
+    <tr><td class="c">plan / billing_ref</td><td class="c">text</td><td>تفاصيل الخطة مرجعها <bdi>DOC-09</bdi></td></tr>
+    <tr><td class="c" colspan="3">seat_events: (id, subscription_id FK, delta int, reason enum[expand|reduce|activate_dr|deactivate_dr], actor_user_id FK) — سجل زمني لكل تغيّر في المقاعد</td></tr>
+  </table>
+
+  <h3><bdi>integration_configs</bdi> و <bdi>coding_system_configs</bdi> — إعدادات الأدمن</h3>
+  <table>
+    <tr><th>العمود</th><th>النوع</th><th>ملاحظات</th></tr>
+    <tr><td class="c" colspan="2">integration_configs</td><td>(<bdi>id, facility_id FK unique, endpoint_url, auth_secret_encrypted, mode enum[test|live], last_test_at, last_test_ok</bdi>) — وجهة الرفع لنظام المستشفى (<bdi>FR-302</bdi>)، الأسرار مشفّرة عموداً</td></tr>
+    <tr><td class="c" colspan="2">coding_system_configs</td><td>(<bdi>id, facility_id FK, system enum[ICD10AM|ACHI|SBS|NDC], version text, is_active bool</bdi>) — أنظمة الترميز المعتمدة (<bdi>FR-301</bdi>)، يُسمح بأكثر من نظام نشط</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٤</span> جداول المرضى والقوالب</h2>
+
+  <h3><bdi>patients</bdi> — المرضى (مرجع محلي)</h3>
+  <table>
+    <tr><th>العمود</th><th>النوع</th><th>ملاحظات</th></tr>
+    <tr class="pk"><td class="c">id</td><td class="c">uuid PK</td><td></td></tr>
+    <tr><td class="c">facility_id</td><td class="c">uuid FK</td><td class="fk">→ facilities · RLS</td></tr>
+    <tr><td class="c">hospital_mrn</td><td class="c">text</td><td>رقم الملف في نظام المستشفى (<bdi>unique(facility_id, hospital_mrn)</bdi>)</td></tr>
+    <tr><td class="c">display_name</td><td class="c">text encrypted</td><td>مشفّر عموداً — <bdi>PII</bdi></td></tr>
+    <tr><td class="c">dob / gender</td><td class="c">encrypted</td><td>مشفّر عموداً — <bdi>PII</bdi></td></tr>
+  </table>
+
+  <h3><bdi>patient_context_snapshots</bdi> — لقطات ملف المريض للتحليل</h3>
+  <table>
+    <tr><th>العمود</th><th>النوع</th><th>ملاحظات</th></tr>
+    <tr class="pk"><td class="c">id</td><td class="c">uuid PK</td><td></td></tr>
+    <tr><td class="c">patient_id / facility_id</td><td class="c">uuid FK</td><td class="fk">RLS</td></tr>
+    <tr><td class="c">content_json</td><td class="c">jsonb encrypted</td><td>الملف التاريخي المجلوب عند بدء الزيارة (<bdi>FR-601</bdi>) — مدخل الإرشاد المدمج (<bdi>FR-701</bdi>)</td></tr>
+    <tr><td class="c">fetched_at</td><td class="c">timestamptz</td><td>لكل زيارة لقطة بتاريخها — قابلية تدقيق ما رآه الـ<bdi>AI</bdi></td></tr>
+  </table>
+
+  <h3><bdi>templates</bdi> — قوالب التلخيص (الجاهزة + العكسية)</h3>
+  <table>
+    <tr><th>العمود</th><th>النوع</th><th>ملاحظات</th></tr>
+    <tr class="pk"><td class="c">id</td><td class="c">uuid PK</td><td></td></tr>
+    <tr><td class="c">facility_id</td><td class="c">uuid FK</td><td class="fk">RLS</td></tr>
+    <tr><td class="c">owner_user_id</td><td class="c">uuid FK null</td><td><bdi>null</bdi> = قالب عام للمنشأة · قيمة = قالب شخصي للدكتور (<bdi>FR-501</bdi>)</td></tr>
+    <tr><td class="c">name / specialty / visit_type</td><td class="c">text</td><td></td></tr>
+    <tr><td class="c">structure_json</td><td class="c">jsonb</td><td>بنية أقسام <bdi>SOAP</bdi> وتعليمات التلخيص لكل قسم</td></tr>
+    <tr><td class="c">origin</td><td class="c">enum</td><td><bdi>system | reverse_built</bdi> — الثاني ناتج البناء العكسي (<bdi>FR-502</bdi>)</td></tr>
+    <tr><td class="c">source_sample_text</td><td class="c">text null</td><td>نص المثال الذي أدخله الدكتور في البناء العكسي — يُحفظ للمرجعية</td></tr>
+    <tr><td class="c">is_default / archived_at</td><td class="c">bool / tstz</td><td><bdi>FR-505</bdi> · <bdi>FR-504</bdi></td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٥</span> جداول الزيارة — قلب النظام</h2>
+
+  <h3><bdi>visits</bdi> — الزيارات</h3>
+  <table>
+    <tr><th>العمود</th><th>النوع</th><th>ملاحظات</th></tr>
+    <tr class="pk"><td class="c">id</td><td class="c">uuid PK</td><td></td></tr>
+    <tr><td class="c">facility_id / clinic_id / doctor_id / patient_id / template_id</td><td class="c">uuid FK</td><td class="fk">العلاقات الخمس · RLS على <bdi>facility_id</bdi> + قيد: الدكتور يرى زياراته فقط (<bdi>DOC-06</bdi>)</td></tr>
+    <tr><td class="c">state</td><td class="c">enum</td><td><bdi>draft → recording → transcribed → summarized → in_review → approved → uploaded | upload_failed</bdi> — آلة حالات صريحة، الانتقالات في اتجاه واحد</td></tr>
+    <tr><td class="c">context_snapshot_id</td><td class="c">uuid FK</td><td class="fk">→ اللقطة المستخدمة في التحليل</td></tr>
+  </table>
+
+  <h3><bdi>recordings</bdi> و <bdi>transcripts</bdi></h3>
+  <table>
+    <tr><th>الجدول</th><th>الأعمدة الجوهرية</th><th>ملاحظات</th></tr>
+    <tr><td class="c">recordings</td><td class="c">id, visit_id FK unique, facility_id, storage_uri, duration_sec, retention_until, deleted_at</td><td>الصوت مشفّر تخزيناً، يُحذف آلياً عند <bdi>retention_until</bdi> (<bdi>NFR-06</bdi>) · دعم انقطاع الشبكة عبر أجزاء (<bdi>chunks</bdi>) — <bdi>NFR-09</bdi></td></tr>
+    <tr><td class="c">transcripts</td><td class="c">id, visit_id FK unique, facility_id, content_json encrypted, language_stats</td><td>النص الكامل مع الطوابع الزمنية — يبقى مرتبطاً بالزيارة (<bdi>FR-604</bdi>)</td></tr>
+  </table>
+
+  <h3><bdi>summaries</bdi> و <bdi>summary_sections</bdi> — ملخص <bdi>SOAP</bdi></h3>
+  <table>
+    <tr><th>الجدول</th><th>الأعمدة الجوهرية</th><th>ملاحظات</th></tr>
+    <tr><td class="c">summaries</td><td class="c">id, visit_id FK unique, facility_id, model_ref, generated_at</td><td>رأس الملخص + مرجع النموذج المولِّد (تتبع <bdi>DOC-14</bdi>)</td></tr>
+    <tr><td class="c">summary_sections</td><td class="c">id, summary_id FK, facility_id, section_key (S|O|A|P|custom), position, content_current text encrypted, content_original text encrypted</td><td>الأصل المولّد يُحفظ منفصلاً عن النص الحالي — يتيح عرض ما تغيّر (<bdi>FR-707</bdi>) وقياس حجم التعديل (<bdi>FR-402</bdi>)</td></tr>
+  </table>
+
+  <h3><bdi>guidance_items</bdi> — الإرشادات المضمّنة</h3>
+  <table>
+    <tr><th>العمود</th><th>النوع</th><th>ملاحظات</th></tr>
+    <tr class="pk"><td class="c">id</td><td class="c">uuid PK</td><td></td></tr>
+    <tr><td class="c">section_id / facility_id</td><td class="c">uuid FK</td><td class="fk">مربوط بالفقرة المحددة (<bdi>FR-701</bdi>) · RLS</td></tr>
+    <tr><td class="c">kind</td><td class="c">enum</td><td><bdi>clinical_dx | clinical_rx | clinical_procedure | coding_match</bdi> (<bdi>FR-702/703</bdi>)</td></tr>
+    <tr><td class="c">suggestion_text</td><td class="c">text</td><td>نص الإرشاد بمصطلحات نظام الترميز المعتمد</td></tr>
+    <tr><td class="c">code_system / code_value</td><td class="c">text null</td><td>الرمز المقترح إن كان ترميزياً (<bdi>ICD-10-AM</bdi>...)</td></tr>
+    <tr><td class="c">evidence_source</td><td class="c">enum + jsonb</td><td><bdi>patient_file | current_visit</bdi> + إشارة للمقطع — لا اقتراح بلا تعليل (قاعدة حاكمة <bdi>DOC-03</bdi> §٦)</td></tr>
+    <tr><td class="c">status</td><td class="c">enum</td><td><bdi>pending | accepted | rejected | modified</bdi> — لا تطبيق تلقائي (<bdi>FR-704</bdi>)</td></tr>
+    <tr><td class="c">resolved_by / resolved_at</td><td class="c">uuid FK / tstz</td><td>من حسم الإرشاد ومتى</td></tr>
+  </table>
+
+  <h3><bdi>edit_events</bdi> — أحداث التحرير الثلاثية</h3>
+  <table>
+    <tr><th>العمود</th><th>النوع</th><th>ملاحظات</th></tr>
+    <tr class="pk"><td class="c">id</td><td class="c">uuid PK</td><td></td></tr>
+    <tr><td class="c">visit_id / section_id / facility_id</td><td class="c">uuid FK</td><td class="fk">RLS</td></tr>
+    <tr><td class="c">channel</td><td class="c">enum</td><td><bdi>typing | voice | ai_chat</bdi> (<bdi>FR-705/706/707</bdi>)</td></tr>
+    <tr><td class="c">payload_json</td><td class="c">jsonb encrypted</td><td>للمحادثة: الطلب + الرد + الفروقات المطبقة</td></tr>
+    <tr><td class="c">actor_user_id</td><td class="c">uuid FK</td><td>الدكتور دائماً</td></tr>
+  </table>
+
+  <h3><bdi>approvals</bdi> و <bdi>upload_jobs</bdi> — الاعتماد والرفع</h3>
+  <table>
+    <tr><th>الجدول</th><th>الأعمدة الجوهرية</th><th>ملاحظات</th></tr>
+    <tr><td class="c">approvals</td><td class="c">id, visit_id FK unique, facility_id, approved_by FK, approved_at, summary_hash, codes_hash</td><td><b>جدول إلحاقي فقط</b> (لا <bdi>UPDATE/DELETE</bdi> — قيد قاعدة بيانات): بصمة ما اعتُمد بالضبط (<bdi>NFR-10</bdi>)</td></tr>
+    <tr><td class="c">upload_jobs</td><td class="c">id, visit_id FK unique, facility_id, fhir_payload_ref, status enum[queued|sent|confirmed|failed], attempts_count</td><td>لا يُنشأ صف إلا بوجود <bdi>approval</bdi> — قيد <bdi>FK</bdi> يفرض <bdi>FR-803</bdi> على مستوى القاعدة</td></tr>
+    <tr><td class="c">upload_attempts</td><td class="c">id, job_id FK, started_at, result, error_code</td><td>سجل المحاولات وإعادة المحاولة (<bdi>FR-805</bdi>) · رموز الأخطاء من <bdi>DOC-13</bdi></td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٦</span> جداول النظام العرضية</h2>
+  <table>
+    <tr><th>الجدول</th><th>الأعمدة الجوهرية</th><th>ملاحظات</th></tr>
+    <tr><td class="c">audit_logs</td><td class="c">id, facility_id, actor_user_id, action, entity, entity_id, meta_json, at</td><td>إلحاقي فقط · يغطي عمليات الأدمن (<bdi>FR-303</bdi>) وكل اعتماد/رفع</td></tr>
+    <tr><td class="c">notifications</td><td class="c">id, facility_id, user_id FK, kind, payload_json, read_at</td><td>أنواعها ومحتواها في <bdi>DOC-12</bdi></td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٧</span> سياسات <bdi>RLS</bdi> والأمان</h2>
+  <ul>
+    <li><b>سياسة العزل الأساسية:</b> على كل جدول يحمل <bdi>facility_id</bdi>: <bdi>USING (facility_id = current_setting('app.facility_id')::uuid)</bdi> — تُضبط القيمة من الخادم عند كل طلب بعد التحقق من <bdi>JWT</bdi>.</li>
+    <li><b>سياسة الدكتور:</b> على جداول الزيارة وما تحتها: الدكتور يصل فقط لصفوف <bdi>doctor_id = current_user_id</bdi>؛ الأدمن يرى تجميعات اللوحات دون محتوى سريري نصي (تفصيلها في <bdi>DOC-06</bdi>).</li>
+    <li><b>قيود الحالة:</b> <bdi>trigger</bdi> يمنع أي انتقال حالة غير معرّف في آلة حالات <bdi>visits</bdi>، ويمنع تعديل <bdi>summary_sections</bdi> بعد الاعتماد.</li>
+    <li><b>الإلحاقية:</b> <bdi>approvals</bdi> و<bdi>audit_logs</bdi>: صلاحية <bdi>INSERT</bdi> فقط لدور التطبيق؛ لا <bdi>UPDATE/DELETE</bdi> حتى لمالك القاعدة التشغيلي.</li>
+    <li><b>الاحتفاظ:</b> مهمة مجدولة تحذف <bdi>recordings</bdi> بعد <bdi>retention_until</bdi> وتوثّق الحذف في <bdi>audit_logs</bdi>.</li>
+  </ul>
+  <div class="locked"><b>مقفول:</b> لا جدول مستأجري بلا <bdi>facility_id</bdi> و<bdi>RLS</bdi> · <bdi>approvals</bdi> إلحاقي فقط · <bdi>upload_jobs</bdi> مشروط بوجود اعتماد · أعمدة <bdi>PII</bdi> والنصوص السريرية مشفّرة عموداً · آلة حالات <bdi>visits</bdi> أحادية الاتجاه.</div>
+</section>
+
+<div class="approve">
+  <p>باعتماد هذه الوثيقة تُفتح <b><bdi>DOC-05</bdi> — عقد <bdi>API</bdi> الكامل</b>.</p>
+  <p>للاعتماد: <b>«اعتمد»</b> — أو اطلب تعديلات محددة.</p>
+</div>
+
+<footer>Medify · DOC-04 · الإصدار 1.0 · مصدر الحقيقة الوحيد لهذه المرحلة بعد الاعتماد</footer>
+</div>
+</body>
+</html>

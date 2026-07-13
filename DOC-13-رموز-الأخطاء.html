@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-13 — رموز الأخطاء | Medify</title>
+<style>
+:root{--ink:#0f2233;--teal:#0e7c86;--td:#0a5c64;--sky:#eaf6f7;--line:#d7e3e8;--gold:#c9a227;--muted:#5b7280;--bg:#f7fafb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+.page{max-width:940px;margin:0 auto;padding:32px 24px 80px}
+header.doc{background:linear-gradient(135deg,var(--td),var(--teal));color:#fff;border-radius:14px;padding:34px 30px;margin-bottom:26px}
+.kicker{font-size:13px;opacity:.85}h1{font-size:28px;margin:6px 0 4px}.sub{font-size:15px;opacity:.9}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+.status{background:var(--gold)!important;color:#3a2c00;font-weight:700}
+section{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px 26px;margin-bottom:16px}
+h2{color:var(--td);font-size:19px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+h2 .num{color:var(--gold);margin-inline-end:6px}
+p{margin-bottom:10px}ul{margin:6px 24px 12px 0}li{margin-bottom:6px}
+bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,monospace;font-size:.93em;color:var(--td)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+th{background:var(--sky);color:var(--td);padding:7px 10px;text-align:right;border:1px solid var(--line)}
+td{padding:6px 10px;border:1px solid var(--line);vertical-align:top}
+td.k{white-space:nowrap;font-family:Consolas,monospace;direction:ltr;text-align:left;font-size:12px;color:var(--td);font-weight:700}
+.locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:13px 17px;margin:10px 0}.locked b{color:#7a6410}
+footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+.approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:16px 20px;text-align:center;font-size:15px;margin-top:22px}
+</style>
+</head>
+<body><div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 13 من 19 · مبنية على DOC-05 API (معتمدة)</div>
+  <h1>DOC-13 — رموز الأخطاء</h1>
+  <div class="sub">النظام <bdi>MDF-XXXX</bdi> حصري: <bdi>40xx</bdi> مصادقة/صلاحيات · <bdi>42xx</bdi> قواعد عمل · <bdi>429x</bdi> معدل · <bdi>50xx</bdi> معالجة/تكامل. كل رمز برسالتين عربية/إنجليزية.</div>
+  <div class="meta"><span>الإصدار: 1.0</span><span>التاريخ: 2026-07-06</span><span class="status">الحالة: بانتظار الاعتماد</span><span>المالك: عبدالمجيد التركي</span></div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> مصادقة وصلاحيات (<bdi>40xx</bdi>)</h2>
+  <table>
+    <tr><th>الرمز</th><th><bdi>HTTP</bdi></th><th>المعنى</th><th>سلوك الواجهة</th></tr>
+    <tr><td class="k">MDF-4011</td><td>401</td><td>بيانات دخول خاطئة</td><td>رسالة عامة — لا تحديد أيهما خاطئ</td></tr>
+    <tr><td class="k">MDF-4012</td><td>401</td><td>جلسة منتهية</td><td>تحويل لـ<bdi>W-006</bdi> مع تجديد صامت إن أمكن</td></tr>
+    <tr><td class="k">MDF-4031</td><td>403</td><td>خارج صلاحيات الدور (<bdi>DOC-06</bdi>)</td><td>شاشة <bdi>W-004</bdi></td></tr>
+    <tr><td class="k">MDF-4041</td><td>404</td><td>مورد غير موجود أو خارج نطاق الرؤية</td><td>لا كشف عن وجود المورد (<bdi>DOC-06</bdi> §٤)</td></tr>
+    <tr><td class="k">MDF-4013</td><td>403</td><td>حساب معطّل / منشأة معلّقة</td><td>رسالة تواصل مع الأدمن/الدعم</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> قواعد العمل (<bdi>42xx</bdi>)</h2>
+  <table>
+    <tr><th>الرمز</th><th><bdi>HTTP</bdi></th><th>المعنى</th><th>سلوك الواجهة</th></tr>
+    <tr><td class="k">MDF-4221</td><td>422</td><td>لا مقاعد متاحة (<bdi>FR-202</bdi>)</td><td>عرض زر توسعة المقاعد (<bdi>W-105</bdi>) + إشعار <bdi>ad.seats_exhausted</bdi></td></tr>
+    <tr><td class="k">MDF-4222</td><td>422</td><td>اعتماد مرفوض — إرشادات معلقة (<bdi>FR-801</bdi>)</td><td>تمرير للإرشادات المعلقة وإبرازها</td></tr>
+    <tr><td class="k">MDF-4223</td><td>409</td><td>انتقال حالة زيارة غير مسموح (آلة حالات <bdi>DOC-04</bdi>)</td><td>تحديث الشاشة للحالة الفعلية</td></tr>
+    <tr><td class="k">MDF-4224</td><td>412</td><td>تعارض <bdi>ETag</bdi> — تعديل فوق نسخة أقدم</td><td>شاشة <bdi>W-222</bdi> (عرض النسختين)</td></tr>
+    <tr><td class="k">MDF-4225</td><td>422</td><td>قالب غير صالح للحفظ (بنية ناقصة بعد بناء عكسي)</td><td>إرجاع للمعاينة <bdi>W-205</bdi> مع تحديد النقص</td></tr>
+    <tr><td class="k">MDF-4226</td><td>422</td><td>محاولة تعديل زيارة معتمدة</td><td>عرض <bdi>W-221</bdi> للقراءة فقط</td></tr>
+    <tr><td class="k">MDF-4291</td><td>429</td><td>تجاوز حد المعدل</td><td>انتظار <bdi>Retry-After</bdi> آلياً</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٣</span> المعالجة والتكامل (<bdi>50xx</bdi>)</h2>
+  <table>
+    <tr><th>الرمز</th><th><bdi>HTTP</bdi></th><th>المعنى</th><th>سلوك الواجهة</th></tr>
+    <tr><td class="k">MDF-5031</td><td>—</td><td>انقطاع خط التفريغ <bdi>P1</bdi> (عبر <bdi>WS</bdi>)</td><td>وضع الحفظ المحلي <bdi>W-223</bdi> ثم استئناف</td></tr>
+    <tr><td class="k">MDF-5032</td><td>500</td><td>فشل توليد الملخص <bdi>P2</bdi> بعد إعادة المحاولة</td><td>خيار إعادة التوليد يدوياً + إشعار</td></tr>
+    <tr><td class="k">MDF-5033</td><td>500</td><td>فشل الإرشاد المدمج <bdi>P3</bdi></td><td>ملخص بلا إرشادات + تنبيه <bdi>W-224</bdi></td></tr>
+    <tr><td class="k">MDF-5034</td><td>500</td><td>فشل البناء العكسي <bdi>P4</bdi> / محادثة التعديل <bdi>P5</bdi></td><td>رسالة إعادة محاولة داخل الشاشة نفسها</td></tr>
+    <tr><td class="k">MDF-5051</td><td>502</td><td>رفض الرفع من نظام المستشفى (خطأ بنيوي/تحقق)</td><td><bdi>W-219</bdi> مع تفاصيل الرفض الفنية للأدمن</td></tr>
+    <tr><td class="k">MDF-5052</td><td>504</td><td>تعذر الوصول لنظام المستشفى</td><td>إعادة محاولة آلية (<bdi>FR-805</bdi>) + <bdi>ad.integration_down</bdi></td></tr>
+    <tr><td class="k">MDF-5001</td><td>500</td><td>خطأ داخلي غير مصنف</td><td><bdi>W-004</bdi> مع معرف تتبع للدعم</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٤</span> قواعد</h2>
+  <ul>
+    <li>كل استجابة خطأ بغلاف <bdi>DOC-05</bdi> §١: <bdi>{code, message_ar, message_en, details}</bdi>.</li>
+    <li>رسائل المستخدم بالعربية دائماً؛ <bdi>message_en</bdi> للسجلات والدعم.</li>
+    <li>لا يُخترع رمز جديد في الكود — يُضاف هنا أولاً بإصدار جديد.</li>
+    <li>الرموز <bdi>50xx</bdi> تُسجل في التتبع (<bdi>DOC-14</bdi>) مع معرف الطلب دون محتوى سريري.</li>
+  </ul>
+  <div class="locked"><b>مقفول:</b> 19 رمزاً لا غير · البادئة <bdi>MDF</bdi> · ثنائية اللغة إلزامية.</div>
+</section>
+
+<div class="approve"><p>التالية: <b><bdi>DOC-14</bdi> — التتبع والتحليلات</b>.</p></div>
+<footer>Medify · DOC-13 · الإصدار 1.0</footer>
+</div></body></html>

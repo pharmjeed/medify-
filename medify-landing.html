@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medify — كاتب العيادة الذكي | يستمع، يكتب، ويجهّز الترميز</title>
+<meta name="description" content="Medify كاتب طبي ذكي محيطي للقطاع الصحي السعودي. يوثّق المقابلة أثناء حدوثها، يولّد مذكّرة SOAP جاهزة لمراجعتك، ويجهّز الترميز للتصدير إلى نفيس — والقرار يبقى للطبيب.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Quicksand:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0C1A36; --navy2:#14253F; --teal:#4FA3AB; --teal-d:#2E8086; --teal-b:#62C6CD;
+  --mist:#F3F7F8; --card:#FFFFFF; --line:#E3EAEE; --slate:#5B6B82; --ink2:#39495F;
+  --grad:linear-gradient(135deg,#2E8086,#62C6CD);
+  --ok:#2FA37A; --warn:#E0A23B; --err:#D45B5B;
+  --r:18px;
+  --dur-fast:150ms; --dur-base:300ms; --dur-slow:600ms;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;background:var(--mist);color:var(--navy);line-height:1.75}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+.en{font-family:'Inter',sans-serif}
+.mono{font-family:'IBM Plex Mono',monospace;direction:ltr}
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(18px,4vw,32px)}
+.grad-t{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+:focus-visible{outline:3px solid var(--teal-b);outline-offset:3px;border-radius:6px}
+
+/* ============ wordmark ============ */
+.wordmark{display:inline-flex;align-items:flex-end;gap:2px;font-family:'Quicksand',sans-serif;font-weight:600;font-size:26px;letter-spacing:-.01em;direction:ltr;line-height:1}
+.wordmark svg{width:30px;height:20px;margin-bottom:2px}
+.wordmark .up{stroke:var(--teal);stroke-width:3.2;fill:none;stroke-linecap:round}
+
+/* ============ nav ============ */
+.nav{position:sticky;top:0;z-index:50;background:rgba(243,247,248,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav .in{display:flex;align-items:center;justify-content:space-between;height:68px}
+.nav .links{display:flex;gap:26px;font-size:14px;font-weight:500;color:var(--ink2)}
+.nav .links a{transition:color var(--dur-fast) ease-out}
+.nav .links a:hover{color:var(--teal-d)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:12px 26px;font-size:15px;font-weight:600;font-family:inherit;border:0;cursor:pointer;transition:transform var(--dur-fast) ease-out, box-shadow var(--dur-fast) ease-out, background var(--dur-fast) ease-out}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 6px 18px rgba(46,128,134,.28)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(46,128,134,.36)}
+.btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.32)}
+.btn-ghost:hover{border-color:var(--teal-b);color:var(--teal-b)}
+.btn-outline{background:#fff;color:var(--teal-d);border:1.5px solid var(--line)}
+.btn-outline:hover{border-color:var(--teal)}
+.nav .btn{padding:9px 20px;font-size:13.5px}
+
+/* ============ hero ============ */
+.hero{position:relative;background:var(--navy);color:#fff;overflow:hidden}
+.hero .glow{position:absolute;inset:0;background:
+  radial-gradient(560px 420px at 82% -6%,rgba(98,198,205,.30),transparent 62%),
+  radial-gradient(460px 380px at 8% 112%,rgba(79,163,171,.24),transparent 62%)}
+.hero .in{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,64px);align-items:center;padding:clamp(64px,9vw,110px) 0 clamp(56px,8vw,96px)}
+.badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.12em;color:#fff;background:var(--grad);border-radius:999px;padding:7px 16px;margin-bottom:24px}
+.hero h1{font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.32;letter-spacing:-.01em}
+.hero h1 .curveword{position:relative;display:inline-block;white-space:nowrap}
+.hero h1 .curveword svg{position:absolute;inset-inline:0;bottom:-12px;width:100%;height:16px;overflow:visible}
+.hero h1 .curveword path{stroke:var(--teal-b);stroke-width:4;fill:none;stroke-linecap:round;stroke-dasharray:340;stroke-dashoffset:340;animation:draw 700ms ease-out 400ms forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.hero p.lead{margin-top:26px;font-size:clamp(15.5px,2.2vw,18.5px);color:#AEC0D6;max-width:46ch;line-height:1.9}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
+.hero .foot-note{margin-top:26px;font-size:13px;color:#7C8DA8;display:flex;align-items:center;gap:9px}
+.hero .foot-note .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none}
+
+/* hero note mock */
+.mock{background:#fff;border-radius:22px;box-shadow:0 30px 80px rgba(4,10,25,.5);overflow:hidden;color:var(--navy);transform:rotate(-1.2deg)}
+.mock .bar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--mist)}
+.mock .bar .who{font-size:13px;font-weight:600}
+.mock .bar .who span{display:block;font-size:11px;font-weight:400;color:var(--slate)}
+.mock .rec{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;color:var(--teal-d);background:rgba(79,163,171,.12);border-radius:999px;padding:5px 13px}
+.mock .rec .pulse{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.72)}}
+.mock .body{padding:20px 22px 22px}
+.mock .sec-t{font-family:'IBM Plex Mono',monospace;direction:ltr;text-align:left;font-size:10.5px;letter-spacing:.1em;color:var(--slate);margin-bottom:7px}
+.mock .ln{height:9px;border-radius:5px;background:var(--mist);margin-bottom:8px}
+.mock .ln.w80{width:80%}.mock .ln.w62{width:62%}.mock .ln.w90{width:90%}.mock .ln.w45{width:45%}
+.mock .code{display:inline-flex;gap:8px;align-items:center;font-family:'IBM Plex Mono',monospace;direction:ltr;font-size:11.5px;color:var(--teal-d);background:rgba(79,163,171,.1);border:1px solid rgba(79,163,171,.28);border-radius:8px;padding:5px 11px;margin:4px 4px 0 0}
+.mock .approve{display:flex;align-items:center;justify-content:space-between;margin-top:20px;background:var(--navy);border-radius:14px;padding:13px 16px;color:#fff}
+.mock .approve .t{font-size:13px;font-weight:500}
+.mock .approve .t small{display:block;font-size:10.5px;color:#9FB1C9;font-weight:400}
+.mock .approve .go{background:var(--grad);border-radius:999px;padding:8px 18px;font-size:12.5px;font-weight:600;color:#fff;white-space:nowrap}
+
+/* ============ compliance strip ============ */
+.strip{background:#fff;border-bottom:1px solid var(--line)}
+.strip .in{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 14px;padding:20px 0}
+.strip .lbl{font-size:12.5px;color:var(--slate);margin-inline-end:6px}
+.chip{font-family:'IBM Plex Mono',monospace;direction:ltr;font-size:12px;font-weight:600;color:var(--teal-d);background:var(--mist);border:1px solid var(--line);border-radius:999px;padding:6px 15px}
+
+/* ============ sections ============ */
+.sec{padding:clamp(60px,9vw,104px) 0}
+.eyebrow{display:inline-block;font-family:'IBM Plex Mono',monospace;direction:ltr;font-size:12px;font-weight:600;letter-spacing:.14em;color:var(--teal-d);margin-bottom:14px}
+h2.title{font-size:clamp(25px,3.6vw,36px);font-weight:700;line-height:1.4;letter-spacing:-.01em;max-width:24ch}
+p.sub{margin-top:14px;font-size:16px;color:var(--ink2);max-width:60ch}
+.center{text-align:center}
+.center h2.title,.center p.sub{margin-inline:auto}
+
+/* pipeline */
+.pipe{margin-top:52px;display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:10px;direction:ltr}
+.stage{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:104px}
+.stage .box{width:100%;text-align:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 12px 12px;transition:transform var(--dur-base) ease,box-shadow var(--dur-base) ease}
+.stage .box:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(12,26,54,.08)}
+.stage .ic{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--slate)}
+.stage .nm{font-size:13.5px;font-weight:600;margin-top:5px}
+.stage.gate .box{background:var(--navy);border-color:transparent;color:#fff;box-shadow:0 10px 26px rgba(12,26,54,.28)}
+.stage.gate .ic{color:var(--teal-b)}
+.stage.gate .tag{font-size:10.5px;color:var(--teal-d);font-weight:600;background:rgba(79,163,171,.12);border-radius:999px;padding:3px 11px}
+.pipe .arr{align-self:center;color:var(--teal);font-size:17px;padding-bottom:22px}
+.gates-note{margin-top:30px;text-align:center;font-size:14.5px;color:var(--ink2)}
+.gates-note b{color:var(--navy)}
+
+/* value pillars */
+.pillars{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pill{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:28px 26px;transition:transform var(--dur-base) ease,box-shadow var(--dur-base) ease}
+.pill:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(12,26,54,.09)}
+.pill .glyph{width:46px;height:46px;border-radius:13px;background:rgba(79,163,171,.12);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.pill .glyph svg{width:23px;height:23px;stroke:var(--teal-d);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pill h3{font-size:17.5px;font-weight:700}
+.pill p{font-size:14px;color:var(--ink2);margin-top:9px}
+
+/* audiences */
+.aud{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ac{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:26px 24px;display:flex;flex-direction:column;gap:12px}
+.ac .who{font-size:17px;font-weight:700}
+.ac .care{font-size:11.5px;color:var(--slate)}
+.ac .msg{font-size:14px;font-weight:500;background:var(--mist);border-radius:12px;padding:14px;line-height:1.8}
+.ac .pr{font-size:13px;color:var(--ink2);line-height:1.8}
+.ac .cta{margin-top:auto;font-size:13.5px;font-weight:600;color:var(--teal-d);display:inline-flex;align-items:center;gap:7px;transition:gap var(--dur-fast) ease}
+.ac .cta:hover{gap:11px}
+
+/* vs alternatives */
+.vs-wrap{margin-top:44px;background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.vrow{display:grid;grid-template-columns:230px 1fr;gap:18px;padding:20px 26px;border-bottom:1px solid var(--line);align-items:baseline}
+.vrow:last-child{border-bottom:0}
+.vrow .k{font-weight:700;font-size:14.5px;color:var(--teal-d)}
+.vrow .v{font-size:14.5px;color:var(--ink2)}
+
+/* compliance dark */
+.dark{background:var(--navy);color:#fff;position:relative;overflow:hidden}
+.dark .glow{position:absolute;inset:0;background:radial-gradient(480px 340px at 88% 4%,rgba(98,198,205,.24),transparent 62%),radial-gradient(360px 300px at 4% 100%,rgba(79,163,171,.18),transparent 62%)}
+.dark .in{position:relative}
+.dark p.sub{color:#AEC0D6}
+.comp{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cc{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11);border-radius:16px;padding:20px 20px 18px;transition:border-color var(--dur-base) ease,background var(--dur-base) ease}
+.cc:hover{border-color:rgba(98,198,205,.5);background:rgba(255,255,255,.07)}
+.cc .tag{display:inline-block;font-family:'IBM Plex Mono',monospace;direction:ltr;font-size:11px;font-weight:600;color:#fff;background:var(--teal-d);border-radius:7px;padding:4px 10px;margin-bottom:12px}
+.cc .t{font-weight:600;font-size:15px}
+.cc .d{font-size:12.5px;color:#9FB1C9;margin-top:6px;line-height:1.75}
+.residency{margin-top:34px;display:flex;flex-wrap:wrap;align-items:center;gap:14px;background:rgba(79,163,171,.1);border:1px solid rgba(98,198,205,.3);border-radius:16px;padding:18px 22px}
+.residency .ic{width:40px;height:40px;border-radius:12px;background:var(--grad);display:flex;align-items:center;justify-content:center;flex:none}
+.residency .ic svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.residency .tx{font-size:14.5px;color:#D5DEEA}
+.residency .tx b{color:#fff}
+
+/* final cta */
+.final{padding:clamp(70px,10vw,120px) 0;text-align:center}
+.final h2{font-size:clamp(27px,4vw,42px);font-weight:700;line-height:1.4;max-width:22ch;margin-inline:auto}
+.final p{margin:18px auto 0;font-size:16px;color:var(--ink2);max-width:52ch}
+.final .ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:36px}
+
+/* footer */
+footer{background:var(--navy);color:#9FB1C9;position:relative;overflow:hidden}
+footer .glow{position:absolute;inset:0;background:radial-gradient(300px 180px at 88% 0,rgba(98,198,205,.2),transparent 60%)}
+footer .in{position:relative;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;padding:38px 0}
+footer .wordmark{color:#fff;font-size:22px}
+footer .links{display:flex;flex-wrap:wrap;gap:22px;font-size:13px}
+footer .links a:hover{color:var(--teal-b)}
+footer .base{position:relative;border-top:1px solid rgba(255,255,255,.09);padding:18px 0 24px;font-size:12px;color:#7C8DA8;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
+
+/* reveal on scroll */
+.rv{opacity:0;transform:translateY(22px);transition:opacity var(--dur-slow) ease,transform var(--dur-slow) ease}
+.rv.on{opacity:1;transform:none}
+
+@media(max-width:920px){
+  .hero .in{grid-template-columns:1fr;padding-top:56px}
+  .mock{transform:none;max-width:520px}
+  .pillars,.aud,.comp{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .nav .links{display:none}
+  .pillars,.aud,.comp{grid-template-columns:1fr}
+  .vrow{grid-template-columns:1fr;gap:5px;padding:18px 20px}
+  .pipe{gap:8px}
+  .pipe .arr{display:none}
+  .stage{min-width:calc(50% - 8px)}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+  .hero h1 .curveword path{stroke-dashoffset:0}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Nav ===== -->
+<nav class="nav" aria-label="التنقل الرئيسي">
+  <div class="wrap in">
+    <a href="#" class="wordmark" aria-label="Medify — الصفحة الرئيسية">medif<span style="position:relative">y<svg viewBox="0 0 30 20" aria-hidden="true" style="position:absolute;left:2px;bottom:-4px"><path class="up" d="M2 17 C10 17, 18 14, 27 3"/></svg></span></a>
+    <div class="links">
+      <a href="#how">كيف يعمل</a>
+      <a href="#why">لماذا Medify</a>
+      <a href="#audiences">لمن</a>
+      <a href="#compliance">الامتثال</a>
+    </div>
+    <a href="#cta" class="btn btn-primary">جرّب أول مقابلة</a>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<header class="hero">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="wrap in">
+    <div>
+      <span class="badge">كاتب العيادة الذكي المحيطي · <span class="en">AMBIENT AI SCRIBE</span></span>
+      <h1>من حديث العيادة إلى مذكّرة طبية جاهزة — <span class="curveword">دون أن تكتب حرفاً<svg viewBox="0 0 340 16" preserveAspectRatio="none" aria-hidden="true"><path d="M4 13 C120 13, 230 11, 336 2"/></svg></span>.</h1>
+      <p class="lead"><b style="color:#fff">Medify نظام توثيق طبي ذكي يعمل في خلفية العيادة:</b> يستمع للمقابلة بينك وبين مريضك، يحوّلها فوراً إلى مذكّرة SOAP منظّمة بالعربية أو الإنجليزية، ويقترح أكواد الترميز (ICD-10-AM) جاهزةً للتصدير إلى ملف المريض ومنصّة نفيس. أنت تراجع وتعتمد — وهو يتكفّل بالباقي.</p>
+      <div class="ctas">
+        <a href="#cta" class="btn btn-primary">جرّب أول مقابلة</a>
+        <a href="#compliance" class="btn btn-ghost">راجع نموذج الامتثال</a>
+      </div>
+      <div class="foot-note"><span class="dot" aria-hidden="true"></span>بيانات تبقى داخل المملكة · اعتماد بشري قبل كل تصدير</div>
+    </div>
+
+    <!-- note mock -->
+    <div class="mock" role="img" aria-label="نموذج لواجهة Medify: مقابلة قيد التسجيل ومذكّرة SOAP جاهزة للمراجعة والاعتماد">
+      <div class="bar">
+        <div class="who">عيادة الباطنة · غرفة 4<span>د. عبدالمجيد — مقابلة متابعة</span></div>
+        <span class="rec"><span class="pulse" aria-hidden="true"></span>تسجيل مباشر</span>
+      </div>
+      <div class="body">
+        <div class="sec-t">SOAP · SUBJECTIVE</div>
+        <div class="ln w90"></div><div class="ln w80"></div><div class="ln w62"></div>
+        <div class="sec-t" style="margin-top:16px">ASSESSMENT & PLAN</div>
+        <div class="ln w80"></div><div class="ln w45"></div>
+        <div style="margin-top:16px">
+          <div class="sec-t">SUGGESTED CODES · ICD-10-AM</div>
+          <span class="code">J45.909 <span style="color:var(--slate)">Asthma, unspecified</span></span>
+          <span class="code">R05.9 <span style="color:var(--slate)">Cough</span></span>
+        </div>
+        <div class="approve">
+          <div class="t">المذكّرة جاهزة لمراجعتك واعتمادها.<small>يتطلّب التصدير اعتمادك للترميز أولاً.</small></div>
+          <span class="go">مراجعة واعتماد</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== Compliance strip ===== -->
+<div class="strip">
+  <div class="wrap in">
+    <span class="lbl">مصمَّم للامتثال التنظيمي السعودي:</span>
+    <span class="chip">CCHI</span><span class="chip">SFDA</span><span class="chip">NPHIES</span><span class="chip">PDPL</span><span class="chip">CBAHI</span><span class="chip">Nafais · FHIR</span>
+  </div>
+</div>
+
+<!-- ===== How it works ===== -->
+<section class="sec" id="how">
+  <div class="wrap center">
+    <span class="eyebrow">HOW IT WORKS</span>
+    <h2 class="title rv">من الكلام المنطوق إلى مطالبة قابلة للتصدير — في مسارٍ واحد</h2>
+    <p class="sub rv">سبع مراحل واضحة، تمرّ عبر بوّابتَي اعتماد بشري لا يتجاوزهما النظام. الذكاء يعمل في الخلفية؛ الطبيب يعتمد ويُصدّر.</p>
+
+    <div class="pipe rv" role="list" aria-label="مراحل معالجة المقابلة">
+      <div class="stage" role="listitem"><div class="box"><div class="ic">01</div><div class="nm">تسجيل</div></div></div>
+      <span class="arr" aria-hidden="true">›</span>
+      <div class="stage" role="listitem"><div class="box"><div class="ic">02</div><div class="nm">نسخ</div></div></div>
+      <span class="arr" aria-hidden="true">›</span>
+      <div class="stage" role="listitem"><div class="box"><div class="ic">03</div><div class="nm">مذكّرة</div></div></div>
+      <span class="arr" aria-hidden="true">›</span>
+      <div class="stage gate" role="listitem"><div class="box"><div class="ic">GATE 1</div><div class="nm">اعتماد المذكّرة</div></div><span class="tag">اعتماد بشري</span></div>
+      <span class="arr" aria-hidden="true">›</span>
+      <div class="stage" role="listitem"><div class="box"><div class="ic">05</div><div class="nm">ترميز</div></div></div>
+      <span class="arr" aria-hidden="true">›</span>
+      <div class="stage gate" role="listitem"><div class="box"><div class="ic">GATE 2</div><div class="nm">اعتماد الترميز</div></div><span class="tag">اعتماد بشري</span></div>
+      <span class="arr" aria-hidden="true">›</span>
+      <div class="stage" role="listitem"><div class="box"><div class="ic">07</div><div class="nm">تصدير</div></div></div>
+    </div>
+    <p class="gates-note rv"><b>بوّابتا الاعتماد البشري مبدأ غير قابل للتنازل.</b> لا مذكّرة تُرمَّز قبل اعتماد الطبيب، ولا ترميز يُصدَّر قبل مراجعته — المسؤولية السريرية تبقى حيث يجب أن تكون.</p>
+  </div>
+</section>
+
+<!-- ===== Why Medify ===== -->
+<section class="sec" id="why" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow">WHY MEDIFY</span>
+    <h2 class="title rv">توثيقٌ يعيد للطبيب وقته — دون أن يتنازل عن مسؤوليته</h2>
+    <div class="pillars">
+      <article class="pill rv">
+        <div class="glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8l4 4v12H4V4Z"/><path d="M8 12h8M8 16h5"/></svg></div>
+        <h3>دقيق ومنظّم</h3>
+        <p>مذكّرات SOAP مبنية على ما قِيل فعلاً في المقابلة، بلا حشو ولا قوالب مكرّرة تُنسخ وتُلصق.</p>
+      </article>
+      <article class="pill rv">
+        <div class="glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21c5 0 9-4 9-9s-4-9-9-9-9 4-9 9 4 9 9 9Z"/><path d="M3.5 9h17M3.5 15h17M12 3c-2.5 2.5-2.5 15.5 0 18M12 3c2.5 2.5 2.5 15.5 0 18"/></svg></div>
+        <h3>عربي بطبيعته</h3>
+        <p>مضبوط على المصطلح الطبي العربي واللهجة السعودية. العربية والإنجليزية بتكافؤ كامل — لا ترجمة لاحقة.</p>
+      </article>
+      <article class="pill rv">
+        <div class="glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <h3>القرار للطبيب</h3>
+        <p>الذكاء يعمل في الخلفية؛ الطبيب يراجع ويعتمد ويُصدّر. «جاهز لمراجعتك» — لا أتمتة تتجاوزك.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Audiences ===== -->
+<section class="sec" id="audiences" style="background:#fff;border-block:1px solid var(--line)">
+  <div class="wrap">
+    <span class="eyebrow">FOR EVERY STAKEHOLDER</span>
+    <h2 class="title rv">قيمة واضحة لكل طرف في المنشأة</h2>
+    <div class="aud">
+      <article class="ac rv">
+        <div class="who">الطبيب</div>
+        <div class="care">الوقت · الدقّة · السيطرة</div>
+        <p class="msg">«وثّق وأنت تنظر لمريضك — Medify يكتب، وأنت تعتمد.»</p>
+        <p class="pr">توثيق أثناء المقابلة بدل ساعاتٍ بعدها، مذكّرة SOAP جاهزة للمراجعة، وتحكّم كامل قبل التصدير.</p>
+        <a href="#cta" class="cta">جرّب أول مقابلة <span aria-hidden="true">←</span></a>
+      </article>
+      <article class="ac rv">
+        <div class="who">إدارة المستشفى</div>
+        <div class="care">الإنتاجية · الامتثال · التكلفة</div>
+        <p class="msg">«مرضى أكثر بجودة توثيق أعلى — وامتثال مدمج بالتصميم.»</p>
+        <p class="pr">إنتاجية أعلى للأطباء، توثيق مكتمل يدعم معايير CBAHI، وتصدير مباشر إلى NPHIES.</p>
+        <a href="#cta" class="cta">احجز عرضاً للمنشأة <span aria-hidden="true">←</span></a>
+      </article>
+      <article class="ac rv">
+        <div class="who">الامتثال والتأمين</div>
+        <div class="care">المعايير · المسؤولية · Nafais</div>
+        <p class="msg">«ترميز قابل للمطالبة وبوّابتا اعتماد بشري — امتثال CCHI من الأساس.»</p>
+        <p class="pr">ICD-10-AM · AR-DRG، اعتماد قبل الترميز وقبل التصدير، وتوافق كامل مع Nafais/FHIR.</p>
+        <a href="#compliance" class="cta">راجع نموذج الامتثال <span aria-hidden="true">←</span></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Vs alternatives ===== -->
+<section class="sec">
+  <div class="wrap">
+    <span class="eyebrow">WHY NOT THE ALTERNATIVES</span>
+    <h2 class="title rv">مقارنةً بما هو متاح اليوم</h2>
+    <div class="vs-wrap rv">
+      <div class="vrow"><span class="k">مقابل الكتابة اليدوية</span><span class="v">يوثّق أثناء المقابلة بدل ساعات بعدها — وقتٌ يعود للمريض.</span></div>
+      <div class="vrow"><span class="k">مقابل كاتب أجنبي عام</span><span class="v">مضبوط على المصطلح الطبي العربي واللهجة السعودية، لا نسخ حرفي ركيك.</span></div>
+      <div class="vrow"><span class="k">مقابل النسخ الخارجي (Offshore)</span><span class="v">بيانات تبقى داخل المملكة وامتثال PDPL — لا تسريب للخارج.</span></div>
+      <div class="vrow"><span class="k">مقابل قوالب EHR الجاهزة</span><span class="v">مذكّرة من سياق المقابلة الحقيقي، لا نموذج مكرّر يُنسخ ويُلصق.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Compliance (dark) ===== -->
+<section class="sec dark" id="compliance">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="wrap in">
+    <span class="eyebrow" style="color:var(--teal-b)">COMPLIANCE BY DESIGN</span>
+    <h2 class="title rv">الامتثال ليس ميزة إضافية — بل جزء من وعد العلامة</h2>
+    <p class="sub rv">مبنيٌّ في التصميم من الأساس، متوافقاً مع الأطر التنظيمية للقطاع الصحي السعودي.</p>
+    <div class="comp">
+      <article class="cc rv"><span class="tag">CCHI</span><div class="t">مجلس الضمان الصحي</div><div class="d">المادة 99: معايير الترميز ICD-10-AM · AR-DRG · NDC. المادة 91: مسؤولية الاعتماد.</div></article>
+      <article class="cc rv"><span class="tag">SFDA</span><div class="t">الغذاء والدواء</div><div class="d">تصنيف البرمجيات كجهاز طبي (SaMD).</div></article>
+      <article class="cc rv"><span class="tag">NPHIES</span><div class="t">منصّة نفيس الصحية</div><div class="d">تكامل FHIR HL7 للتصدير والمطالبات.</div></article>
+      <article class="cc rv"><span class="tag">PDPL</span><div class="t">حماية البيانات</div><div class="d">خصوصية وإقامة بيانات داخل المملكة (KSA residency).</div></article>
+      <article class="cc rv"><span class="tag">CBAHI</span><div class="t">اعتماد المنشآت</div><div class="d">توثيق مكتمل يدعم معايير الجودة.</div></article>
+      <article class="cc rv"><span class="tag">Nafais</span><div class="t">الوسيط الإلزامي</div><div class="d">FHIR · PKI · REST، وربط ICD-10-AM · ACHI · SBS · GTIN.</div></article>
+    </div>
+    <div class="residency rv">
+      <span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <p class="tx"><b>بياناتك لا تغادر المملكة.</b> استضافة داخل السعودية، تشفير أثناء النقل والتخزين، وسجلّ تدقيق كامل لكل اعتمادٍ وتصدير.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Final CTA ===== -->
+<section class="final" id="cta">
+  <div class="wrap">
+    <h2 class="rv">أول مقابلة تكفي لتعرف الفرق.</h2>
+    <p class="rv">سجّل مقابلة واحدة، وراجع المذكّرة والترميز بنفسك. لا التزام — والاعتماد النهائي بيدك دائماً.</p>
+    <div class="ctas rv">
+      <a href="mailto:hello@medify.sa?subject=تجربة أول مقابلة" class="btn btn-primary">جرّب أول مقابلة</a>
+      <a href="mailto:hello@medify.sa?subject=حجز عرض للمنشأة" class="btn btn-outline">احجز عرضاً للمنشأة</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="wrap in">
+    <a href="#" class="wordmark" aria-label="Medify">medif<span style="position:relative">y<svg viewBox="0 0 30 20" aria-hidden="true" style="position:absolute;left:2px;bottom:-4px"><path class="up" d="M2 17 C10 17, 18 14, 27 3" style="stroke:var(--teal-b)"/></svg></span></a>
+    <div class="links">
+      <a href="#how">كيف يعمل</a>
+      <a href="#audiences">لمن</a>
+      <a href="#compliance">الامتثال</a>
+      <a href="mailto:hello@medify.sa">تواصل معنا</a>
+    </div>
+  </div>
+  <div class="wrap base">
+    <span>© 2026 Medify — كاتب العيادة الذكي للقطاع الصحي السعودي</span>
+    <span class="mono">LISTEN · WRITE · CODE · YOU APPROVE</span>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal — respects prefers-reduced-motion via CSS
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.14});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

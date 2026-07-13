@@ -1,0 +1,72 @@
+name: medify
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-medify}
+      POSTGRES_USER: ${POSTGRES_USER:-medify}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-medify-local-only}
+    volumes:
+      - medify_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-medify} -d ${POSTGRES_DB:-medify}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [medify]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - medify_redis:/data
+    networks: [medify]
+
+  api:
+    build: ./apps/api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-medify}:${POSTGRES_PASSWORD:-medify-local-only}@db:5432/${POSTGRES_DB:-medify}
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: ${SECRET_KEY:-medify-development-secret-change-me}
+      ACCESS_TOKEN_MINUTES: ${ACCESS_TOKEN_MINUTES:-30}
+      REFRESH_TOKEN_DAYS: ${REFRESH_TOKEN_DAYS:-7}
+      DEMO_MODE: ${DEMO_MODE:-true}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [medify]
+
+  web:
+    build:
+      context: ./apps/web
+      args:
+        API_INTERNAL_URL: http://api:8000
+    restart: unless-stopped
+    environment:
+      API_INTERNAL_URL: http://api:8000
+      NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-Medify}
+    ports:
+      - "3100:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [medify]
+
+volumes:
+  medify_pgdata:
+  medify_redis:
+
+networks:
+  medify:
+    name: medify_network

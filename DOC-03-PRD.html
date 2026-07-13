@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-03 — وثيقة متطلبات المنتج PRD | Medify</title>
+<style>
+  :root{
+    --ink:#0f2233; --teal:#0e7c86; --teal-dark:#0a5c64; --sky:#eaf6f7;
+    --line:#d7e3e8; --gold:#c9a227; --muted:#5b7280; --bg:#f7fafb; --white:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+  .page{max-width:940px;margin:0 auto;padding:32px 24px 80px}
+  header.doc{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:#fff;border-radius:14px;padding:36px 32px;margin-bottom:28px}
+  header.doc .kicker{font-size:13px;letter-spacing:1px;opacity:.85}
+  header.doc h1{font-size:30px;margin:6px 0 4px}
+  header.doc .sub{font-size:15px;opacity:.9}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+  .status{background:var(--gold)!important;color:#3a2c00;border-color:transparent!important;font-weight:700}
+  section{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:26px 28px;margin-bottom:18px}
+  h2{color:var(--teal-dark);font-size:20px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+  h2 .num{color:var(--gold);margin-inline-end:6px}
+  h3{font-size:16px;color:var(--teal-dark);margin:18px 0 8px;background:var(--sky);padding:8px 14px;border-radius:8px}
+  p{margin-bottom:10px}
+  ul,ol{margin:6px 24px 12px 0}
+  li{margin-bottom:6px}
+  bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,"Segoe UI",monospace;font-size:.95em;color:var(--teal-dark)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+  th{background:var(--sky);color:var(--teal-dark);padding:8px 12px;text-align:right;border:1px solid var(--line)}
+  td{padding:8px 12px;border:1px solid var(--line);vertical-align:top}
+  td.id{white-space:nowrap;font-weight:700;color:var(--teal-dark)}
+  .locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:14px 18px;margin:10px 0}
+  .locked b{color:#7a6410}
+  .principle{border-inline-start:4px solid var(--teal);background:var(--sky);border-radius:8px;padding:12px 16px;margin:10px 0}
+  .must{color:#0a7a3d;font-weight:700}
+  .should{color:#b07d10;font-weight:700}
+  footer{margin-top:30px;text-align:center;color:var(--muted);font-size:13px}
+  .approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:18px 22px;text-align:center;font-size:15px;margin-top:24px}
+  .approve b{color:var(--teal-dark)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 3 من 19 · مبنية على DOC-01 (1.4 معتمدة) و DOC-02 (1.0 معتمدة)</div>
+  <h1>DOC-03 — وثيقة متطلبات المنتج <bdi>PRD</bdi></h1>
+  <div class="sub">تُراجَع بإصدارات حتى الوصول لإصدار الإطلاق النهائي. كل متطلب مرقّم بنطاق مغلق — ممنوع اختراع متطلبات خارجه في أي وثيقة أو مخرج لاحق.</div>
+  <div class="meta">
+    <span>الإصدار: 1.0</span>
+    <span>التاريخ: 2026-07-06</span>
+    <span class="status" style="background:#2e9e5b!important;color:#fff">الحالة: معتمدة ✓</span>
+    <span>المالك: عبدالمجيد التركي</span>
+  </div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> ملخص المنتج والأولوية</h2>
+  <p>Medify: منصة كاتب طبي ذكي محيطي ثنائية اللغة للسوق السعودي. الرحلة المعتمدة (<bdi>DOC-01</bdi> §٤): اختيار القالب ← تسجيل ← تفريغ فوري ← ملخص <bdi>SOAP</bdi> ← إرشاد ذكي مدمج (سريري + ترميزي مبني على ملف المريض) ← تحرير مرن ← بوابة اعتماد واحدة ← رفع لنظام المستشفى.</p>
+  <p><b>ترميز الأولوية:</b> <span class="must">[M]</span> إلزامي للإطلاق الأول · <span class="should">[S]</span> مرغوب إن سمح الوقت · كل ما عداهما خارج النطاق (§٨).</p>
+  <p><b>نطاق الترقيم المغلق:</b> <bdi>FR-100</bdi> إلى <bdi>FR-899</bdi> للمتطلبات الوظيفية، <bdi>NFR-01</bdi> إلى <bdi>NFR-12</bdi> لغير الوظيفية. ممنوع تجاوزه.</p>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> الرحلات الأساسية</h2>
+  <h3>رحلة الأدمن — التفعيل</h3>
+  <p>تسجيل المنشأة ← اختيار عدد المقاعد ← إنشاء العيادات ← إنشاء حسابات الدكاترة (اسم، كلمة مرور، تخصص، عيادة) ← تحديد نظام الترميز المعتمد ← إعداد الربط مع نظام المستشفى ← متابعة لوحات الاستخدام.</p>
+  <h3>رحلة الدكتور — الزيارة</h3>
+  <p>دخول ← اختيار المريض (يُحمَّل ملفه التاريخي) ← اختيار القالب ← تسجيل الاستشارة مع تفريغ فوري ظاهر ← إيقاف التسجيل ← ملخص <bdi>SOAP</bdi> مولّد وفق القالب ← مراجعة الإرشادات المضمّنة على الفقرات ← تعديل (كتابة/صوت/محادثة <bdi>AI</bdi>) ← اعتماد ← رفع تلقائي لملف المريض في نظام المستشفى.</p>
+  <h3>رحلة الدكتور — بناء قالب عكسي</h3>
+  <p>شاشة القوالب ← «قالب جديد عكسي» ← يلصق/يكتب نص المثال وطريقة التلخيص المرغوبة ← الـ<bdi>AI</bdi> يولّد بنية القالب ← معاينة على نص تجريبي ← حفظ باسم ← يظهر في قائمة القوالب الشخصية.</p>
+</section>
+
+<section>
+  <h2><span class="num">٣</span> المتطلبات الوظيفية — الأدمن</h2>
+
+  <h3><bdi>FR-100</bdi> — الحساب والاشتراك</h3>
+  <table>
+    <tr><th>المعرف</th><th>المتطلب</th><th>الأولوية</th></tr>
+    <tr><td class="id">FR-101</td><td>تسجيل منشأة جديدة: اسم المنشأة، السجل التجاري، بيانات الأدمن، عدد المقاعد الأولي</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-102</td><td>توسعة/تقليص عدد المقاعد لاحقاً مع انعكاس فوري على الفوترة (تفاصيلها في <bdi>DOC-09</bdi>)</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-103</td><td>عرض حالة الاشتراك والمقاعد المستهلكة/المتاحة</td><td class="must">[M]</td></tr>
+  </table>
+
+  <h3><bdi>FR-200</bdi> — إدارة العيادات والدكاترة</h3>
+  <table>
+    <tr><th>المعرف</th><th>المتطلب</th><th>الأولوية</th></tr>
+    <tr><td class="id">FR-201</td><td>إنشاء/تعديل/أرشفة عيادات المنشأة</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-202</td><td>إنشاء حساب دكتور: الاسم، كلمة المرور، التخصص، العيادة — كل دكتور يستهلك مقعداً</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-203</td><td>تعطيل/إعادة تفعيل حساب دكتور مع تحرير/حجز المقعد</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-204</td><td>إعادة تعيين كلمة مرور دكتور</td><td class="must">[M]</td></tr>
+  </table>
+
+  <h3><bdi>FR-300</bdi> — إعدادات الترميز والربط</h3>
+  <table>
+    <tr><th>المعرف</th><th>المتطلب</th><th>الأولوية</th></tr>
+    <tr><td class="id">FR-301</td><td>تحديد نظام الترميز المعتمد لدى المنشأة (<bdi>ICD-10-AM</bdi>/<bdi>ACHI</bdi>/<bdi>SBS</bdi>/<bdi>NDC</bdi>) — يظهر أثر الاختيار في كل إرشاد ترميزي</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-302</td><td>إعداد وجهة الرفع لنظام المستشفى (نقطة نهاية، مفاتيح، اختبار اتصال) — العقد التقني في <bdi>DOC-05</bdi> و<bdi>DOC-19</bdi></td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-303</td><td>سجل تدقيق (<bdi>Audit Log</bdi>) لكل عمليات الأدمن</td><td class="must">[M]</td></tr>
+  </table>
+
+  <h3><bdi>FR-400</bdi> — لوحات المتابعة</h3>
+  <table>
+    <tr><th>المعرف</th><th>المتطلب</th><th>الأولوية</th></tr>
+    <tr><td class="id">FR-401</td><td>لوحة استخدام: زيارات موثقة لكل دكتور/عيادة/فترة، متوسط زمن الاعتماد</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-402</td><td>لوحة جودة: نسبة الملخصات المعتمدة دون تعديل، حجم التعديلات، الإرشادات المقبولة/المرفوضة</td><td class="should">[S]</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٤</span> المتطلبات الوظيفية — الدكتور</h2>
+
+  <h3><bdi>FR-500</bdi> — القوالب</h3>
+  <table>
+    <tr><th>المعرف</th><th>المتطلب</th><th>الأولوية</th></tr>
+    <tr><td class="id">FR-501</td><td>قائمة قوالب جاهزة حسب التخصص/نوع الزيارة + قوالب الدكتور الشخصية، مع اختيار إلزامي قبل بدء التسجيل</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-502</td><td><b>البناء العكسي:</b> الدكتور يُدخل نص المثال وطريقة التلخيص المرغوبة ← الـ<bdi>AI</bdi> يولّد قالباً مهيكلاً</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-503</td><td>معاينة القالب المولّد على نص تجريبي قبل الحفظ</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-504</td><td>حفظ/تعديل/حذف القوالب الشخصية وإعادة استخدامها في أي زيارة قادمة</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-505</td><td>تعيين قالب افتراضي للدكتور</td><td class="should">[S]</td></tr>
+  </table>
+
+  <h3><bdi>FR-600</bdi> — التسجيل والتفريغ والتلخيص</h3>
+  <table>
+    <tr><th>المعرف</th><th>المتطلب</th><th>الأولوية</th></tr>
+    <tr><td class="id">FR-601</td><td>اختيار المريض قبل التسجيل وتحميل ملفه التاريخي (المتاح عبر الربط) كسياق للتحليل</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-602</td><td>تسجيل صوتي مع تفريغ فوري ظاهر أثناء المحادثة عبر <bdi>WebSocket</bdi> (عربي بلهجاته + مقاطع إنجليزية مختلطة)</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-603</td><td>إيقاف مؤقت/استئناف/إنهاء التسجيل، مع مؤشر حالة واضح طوال الوقت</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-604</td><td>عرض نص المحادثة الكامل والاحتفاظ به مرتبطاً بالزيارة</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-605</td><td>توليد ملخص <bdi>SOAP</bdi> وفق القالب المختار فور إنهاء التسجيل</td><td class="must">[M]</td></tr>
+  </table>
+
+  <h3><bdi>FR-700</bdi> — الإرشاد المدمج والتحرير</h3>
+  <table>
+    <tr><th>المعرف</th><th>المتطلب</th><th>الأولوية</th></tr>
+    <tr><td class="id">FR-701</td><td>تحليل مدمج يعمل على مصدرين: ملف المريض التاريخي + كلام الزيارة الحالية، ويظهر إرشاداته <u>مضمّنة على الفقرات</u> التي تحتاجها فقط</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-702</td><td><b>الإرشاد السريري:</b> اقتراحات تشخيص وأدوية وإجراءات مناسبة للمريض، مع سبب الاقتراح ومصدره من الملف/المحادثة</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-703</td><td><b>المطابقة الترميزية:</b> صياغة الإرشادات بمصطلحات نظام الترميز المعتمد (<bdi>FR-301</bdi>) بحيث يطابق كل ما كُتب الترميز قبل الرفع</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-704</td><td>قبول/رفض/تعديل كل إرشاد على حدة — لا تطبيق تلقائي لأي إرشاد دون فعل صريح من الدكتور</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-705</td><td>تحرير أي فقرة من الملخص <b>كتابةً</b></td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-706</td><td>تحرير أي فقرة <b>صوتاً</b> (إملاء يُدمج في الفقرة المحددة)</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-707</td><td><b>محادثة <bdi>AI</bdi> ختامية</b> أسفل الملخص: الدكتور يكتب أي طلب فيعدّل النظام أي جزء من الملخص، مع إظهار ما تغيّر</td><td class="must">[M]</td></tr>
+  </table>
+
+  <h3><bdi>FR-800</bdi> — الاعتماد والرفع</h3>
+  <table>
+    <tr><th>المعرف</th><th>المتطلب</th><th>الأولوية</th></tr>
+    <tr><td class="id">FR-801</td><td>بوابة اعتماد بشري نهائية واحدة: ملخص نهائي + الترميز المطابق، وزر اعتماد صريح</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-802</td><td>بعد الاعتماد: رفع بيانات الزيارة كاملة لملف المريض في نظام المستشفى بصيغة متوافقة <bdi>FHIR/NPHIES</bdi>، مع إيصال حالة (نجح/فشل/قيد المعالجة)</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-803</td><td>ممنوع تقنياً خروج أي بيانات قبل الاعتماد (يُنفَّذ على مستوى الخادم لا الواجهة فقط)</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-804</td><td>سجل زيارات الدكتور: بحث واستعراض الزيارات السابقة وحالة رفع كل منها</td><td class="must">[M]</td></tr>
+    <tr><td class="id">FR-805</td><td>إعادة محاولة الرفع تلقائياً عند فشل الاتصال، مع تنبيه الدكتور والأدمن (وثيقة الإشعارات <bdi>DOC-12</bdi>)</td><td class="must">[M]</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٥</span> المتطلبات غير الوظيفية</h2>
+  <table>
+    <tr><th>المعرف</th><th>المتطلب</th><th>الحد المقبول</th></tr>
+    <tr><td class="id">NFR-01</td><td>زمن ظهور التفريغ الفوري أثناء المحادثة</td><td>&le; 2 ثانية من النطق</td></tr>
+    <tr><td class="id">NFR-02</td><td>زمن توليد ملخص <bdi>SOAP</bdi> + الإرشاد المدمج بعد إنهاء التسجيل</td><td>&le; 30 ثانية لاستشارة 15 دقيقة</td></tr>
+    <tr><td class="id">NFR-03</td><td>زمن استجابة محادثة الـ<bdi>AI</bdi> الختامية للتعديل</td><td>&le; 10 ثوانٍ</td></tr>
+    <tr><td class="id">NFR-04</td><td>إقامة البيانات: كل بيانات المرضى داخل المملكة (<bdi>PDPL</bdi>)</td><td>إلزامي، بلا استثناء</td></tr>
+    <tr><td class="id">NFR-05</td><td>عزل المستأجرين: <bdi>RLS</bdi> على مستوى قاعدة البيانات لكل منشأة</td><td>إلزامي، يُختبر آلياً</td></tr>
+    <tr><td class="id">NFR-06</td><td>تشفير: أثناء النقل <bdi>TLS 1.3</bdi> وفي التخزين <bdi>AES-256</bdi>، والتسجيلات الصوتية تُحذف وفق سياسة احتفاظ معلنة</td><td>إلزامي</td></tr>
+    <tr><td class="id">NFR-07</td><td>واجهة <bdi>RTL</bdi> عربية كاملة، والمصطلحات التقنية بالإنجليزية</td><td>إلزامي</td></tr>
+    <tr><td class="id">NFR-08</td><td>التوافرية خلال ساعات العيادات</td><td>&ge; 99.5%</td></tr>
+    <tr><td class="id">NFR-09</td><td>استمرارية الجلسة عند انقطاع الشبكة أثناء التسجيل: تخزين محلي مؤقت واستئناف دون فقد صوت</td><td>إلزامي</td></tr>
+    <tr><td class="id">NFR-10</td><td>سجل تدقيق غير قابل للتعديل لكل اعتماد ورفع (من، متى، ماذا)</td><td>إلزامي</td></tr>
+    <tr><td class="id">NFR-11</td><td>دقة التفريغ العربي السريري تُقاس على عينة العيادة التجريبية قبل الإطلاق</td><td>خط أساس يُحدد في التجربة</td></tr>
+    <tr><td class="id">NFR-12</td><td>قابلية التوسع: معمارية تدعم مئات الجلسات الصوتية المتزامنة</td><td>اختبار حمل قبل الإطلاق</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٦</span> قواعد الذكاء الاصطناعي الحاكمة</h2>
+  <div class="principle">الـ<bdi>AI</bdi> <b>يقترح ولا يقرر</b>: كل إرشاد سريري أو ترميزي يتطلب فعلاً صريحاً من الدكتور (<bdi>FR-704</bdi>). لا وصف دواء ولا تشخيص نهائي آلي.</div>
+  <div class="principle">كل إرشاد يعرض <b>مصدره</b> (من ملف المريض أو من كلام الزيارة) — لا اقتراحات بلا تعليل.</div>
+  <div class="principle">مخططات المدخلات/المخرجات ومكتبة المطالبات لكل خط معالجة تُفصَّل في <bdi>DOC-08</bdi> (خطوط المعالجة) كوثائق مستقلة.</div>
+</section>
+
+<section>
+  <h2><span class="num">٧</span> مقاييس نجاح المنتج</h2>
+  <table>
+    <tr><th>المقياس</th><th>الهدف (العيادة التجريبية)</th></tr>
+    <tr><td>زمن مراجعة واعتماد الملخص</td><td>&le; دقيقتان لكل زيارة (فرضية <bdi>DOC-02</bdi> §٧)</td></tr>
+    <tr><td>نسبة الملخصات المعتمدة بتعديلات طفيفة أو بلا تعديل</td><td>&ge; 70% بعد الأسبوع الثاني</td></tr>
+    <tr><td>نسبة الزيارات التي تجتاز التحقق البنيوي <bdi>NPHIES</bdi> من أول رفع</td><td>&ge; 95%</td></tr>
+    <tr><td>الاستخدام اليومي المستمر (عدم الهجران بعد الأسبوع الأول)</td><td>&ge; 80% من الدكاترة النشطين</td></tr>
+    <tr><td>حوادث خروج بيانات دون اعتماد</td><td>صفر</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٨</span> خارج النطاق (مؤكد من <bdi>DOC-01</bdi>)</h2>
+  <ul>
+    <li>التكامل العميق ثنائي الاتجاه مع <bdi>EMR/HIS</bdi> (يُكتفى بالرفع أحادي الاتجاه — العمق في <bdi>DOC-19</bdi> ومرحلة لاحقة)</li>
+    <li>تتبع <bdi>CPD</bdi> · مجتمع القوالب التشاركي · لوحات <bdi>ROI</bdi> المتقدمة · أي سوق خارج المملكة</li>
+    <li>تطبيق جوال أصيل (الإطلاق الأول: ويب متجاوب)</li>
+    <li>أي دور مستخدم ثالث غير الأدمن والدكتور</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">٩</span> الاعتماديات على الوثائق التالية</h2>
+  <table>
+    <tr><th>الوثيقة</th><th>ما تفصّله من هذه الوثيقة</th></tr>
+    <tr><td><bdi>DOC-04 ERD</bdi></td><td>جداول: المنشآت، العيادات، الدكاترة، المرضى، الزيارات، القوالب، الإرشادات، سجلات التدقيق + <bdi>RLS</bdi></td></tr>
+    <tr><td><bdi>DOC-05 API</bdi></td><td>عقود كل <bdi>FR</bdi> أعلاه + <bdi>WebSocket</bdi> التفريغ + واجهة الرفع</td></tr>
+    <tr><td><bdi>DOC-06 RBAC</bdi></td><td>مصفوفة صلاحيات الدورين على كل مورد</td></tr>
+    <tr><td><bdi>DOC-08</bdi> خطوط المعالجة</td><td>التفريغ، التلخيص بالقالب، الإرشاد المدمج، البناء العكسي للقوالب، محادثة التعديل — مدخلات/مخرجات/مطالبات</td></tr>
+    <tr><td><bdi>DOC-09</bdi> الفوترة</td><td>تسعير المقعد ودورات التوسعة (<bdi>FR-102</bdi>)</td></tr>
+  </table>
+</section>
+
+<div class="approve">
+  <p>باعتماد هذه الوثيقة تُفتح <b><bdi>DOC-04</bdi> — مخطط قاعدة البيانات <bdi>ERD</bdi></b>.</p>
+  <p>للاعتماد: <b>«اعتمد»</b> — أو اطلب تعديلات محددة.</p>
+</div>
+
+<footer>Medify · DOC-03 · الإصدار 1.0 · مصدر الحقيقة الوحيد لهذه المرحلة بعد الاعتماد</footer>
+</div>
+</body>
+</html>

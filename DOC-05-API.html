@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-05 — عقد API الكامل | Medify</title>
+<style>
+  :root{
+    --ink:#0f2233; --teal:#0e7c86; --teal-dark:#0a5c64; --sky:#eaf6f7;
+    --line:#d7e3e8; --gold:#c9a227; --muted:#5b7280; --bg:#f7fafb; --white:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+  .page{max-width:960px;margin:0 auto;padding:32px 24px 80px}
+  header.doc{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:#fff;border-radius:14px;padding:36px 32px;margin-bottom:28px}
+  header.doc .kicker{font-size:13px;letter-spacing:1px;opacity:.85}
+  header.doc h1{font-size:30px;margin:6px 0 4px}
+  header.doc .sub{font-size:15px;opacity:.9}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+  .status{background:var(--gold)!important;color:#3a2c00;border-color:transparent!important;font-weight:700}
+  section{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:26px 28px;margin-bottom:18px}
+  h2{color:var(--teal-dark);font-size:20px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+  h2 .num{color:var(--gold);margin-inline-end:6px}
+  h3{font-size:15.5px;color:var(--teal-dark);margin:18px 0 8px;background:var(--sky);padding:8px 14px;border-radius:8px}
+  p{margin-bottom:10px}
+  ul{margin:6px 24px 12px 0}
+  li{margin-bottom:6px}
+  bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,monospace;font-size:.93em;color:var(--teal-dark)}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+  th{background:var(--sky);color:var(--teal-dark);padding:7px 10px;text-align:right;border:1px solid var(--line)}
+  td{padding:6px 10px;border:1px solid var(--line);vertical-align:top}
+  td.m{white-space:nowrap;font-family:Consolas,monospace;direction:ltr;text-align:left;font-size:12px;font-weight:700}
+  td.m .get{color:#0a7a3d}
+  td.m .post{color:#8a5b00}
+  td.m .patch{color:#7a4b9e}
+  td.m .del{color:#b02a2a}
+  td.p{white-space:nowrap;font-family:Consolas,monospace;direction:ltr;text-align:left;font-size:12px;color:var(--teal-dark)}
+  .code{background:#0f2233;border-radius:12px;padding:16px;margin:12px 0;overflow-x:auto}
+  .code pre{color:#9fd8dd;font-family:Consolas,monospace;font-size:12.5px;line-height:1.6;direction:ltr;text-align:left}
+  .locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:14px 18px;margin:10px 0}
+  .locked b{color:#7a6410}
+  .principle{border-inline-start:4px solid var(--teal);background:var(--sky);border-radius:8px;padding:12px 16px;margin:10px 0}
+  footer{margin-top:30px;text-align:center;color:var(--muted);font-size:13px}
+  .approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:18px 22px;text-align:center;font-size:15px;margin-top:24px}
+  .approve b{color:var(--teal-dark)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 5 من 19 · مبنية على DOC-03 PRD و DOC-04 ERD (معتمدتان)</div>
+  <h1>DOC-05 — عقد <bdi>API</bdi> الكامل</h1>
+  <div class="sub"><bdi>FastAPI</bdi> · القاعدة <bdi>/api/v1</bdi> · هذه القائمة حصرية: ممنوع إنشاء أي نقطة نهاية غير مذكورة هنا بعد الاعتماد.</div>
+  <div class="meta">
+    <span>الإصدار: 1.0</span>
+    <span>التاريخ: 2026-07-06</span>
+    <span class="status" style="background:#2e9e5b!important;color:#fff">الحالة: معتمدة ✓</span>
+    <span>المالك: عبدالمجيد التركي</span>
+  </div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> الاتفاقيات العامة</h2>
+  <ul>
+    <li><b>المصادقة:</b> <bdi>JWT Bearer</bdi> قصير العمر (30 دقيقة) + <bdi>Refresh Token</bdi> (7 أيام، <bdi>httpOnly cookie</bdi>). الحمولة تتضمن <bdi>user_id, facility_id, role</bdi> — ومنها تُضبط جلسة <bdi>RLS</bdi> (<bdi>DOC-04</bdi> §٧).</li>
+    <li><b>الصلاحيات:</b> عمود «الدور» أدناه هو المصدر المبدئي؛ المصفوفة الكاملة في <bdi>DOC-06</bdi>.</li>
+    <li><b>الترقيم الصفحي:</b> <bdi>?page=1&amp;per_page=25</bdi> (الحد الأقصى 100)، والاستجابة تتضمن <bdi>meta.total</bdi>.</li>
+    <li><b>التزامن:</b> عمليات التعديل على الملخص تتطلب <bdi>If-Match: &lt;etag&gt;</bdi> لمنع الكتابة فوق تعديل أحدث.</li>
+    <li><b>حصر المعدل:</b> <bdi>429</bdi> مع <bdi>Retry-After</bdi>؛ حدود خاصة أشد لنقاط الـ<bdi>AI</bdi>.</li>
+  </ul>
+  <h3>غلاف الاستجابة والخطأ الموحد</h3>
+  <div class="code"><pre>// نجاح
+{ "data": { ... }, "meta": { ... } }
+
+// خطأ — رموز الأخطاء حصرياً من DOC-13
+{ "error": { "code": "MDF-4031", "message_ar": "...", "message_en": "...", "details": { ... } } }</pre></div>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> المصادقة والجلسة</h2>
+  <table>
+    <tr><th>الطريقة</th><th>المسار</th><th>الوصف</th><th>الدور</th></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/auth/login</td><td>دخول بـ<bdi>username + password</bdi> داخل منشأة → <bdi>JWT + refresh</bdi></td><td>عام</td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/auth/refresh</td><td>تجديد الرمز</td><td>مسجّل</td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/auth/logout</td><td>إبطال الجلسة</td><td>مسجّل</td></tr>
+    <tr><td class="m"><span class="get">GET</span></td><td class="p">/me</td><td>بيانات المستخدم الحالي ودوره وعيادته</td><td>مسجّل</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٣</span> نقاط الأدمن</h2>
+
+  <h3>المنشأة والاشتراك (<bdi>FR-100</bdi>)</h3>
+  <table>
+    <tr><th>الطريقة</th><th>المسار</th><th>الوصف</th></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/facilities/register</td><td>تسجيل منشأة + أدمنها + المقاعد الأولية (<bdi>FR-101</bdi>) — النقطة العامة الوحيدة</td></tr>
+    <tr><td class="m"><span class="get">GET</span></td><td class="p">/subscription</td><td>حالة الاشتراك والمقاعد المستهلكة/المتاحة (<bdi>FR-103</bdi>)</td></tr>
+    <tr><td class="m"><span class="patch">PATCH</span></td><td class="p">/subscription/seats</td><td>توسعة/تقليص المقاعد (<bdi>FR-102</bdi>) — يسجّل <bdi>seat_event</bdi></td></tr>
+  </table>
+
+  <h3>العيادات والدكاترة (<bdi>FR-200</bdi>)</h3>
+  <table>
+    <tr><th>الطريقة</th><th>المسار</th><th>الوصف</th></tr>
+    <tr><td class="m"><span class="get">GET</span> / <span class="post">POST</span></td><td class="p">/clinics</td><td>قائمة/إنشاء عيادة (<bdi>FR-201</bdi>)</td></tr>
+    <tr><td class="m"><span class="patch">PATCH</span> / <span class="del">DELETE</span></td><td class="p">/clinics/{id}</td><td>تعديل/أرشفة (الحذف = أرشفة ناعمة)</td></tr>
+    <tr><td class="m"><span class="get">GET</span> / <span class="post">POST</span></td><td class="p">/doctors</td><td>قائمة/إنشاء دكتور — يفشل بـ<bdi>MDF-4221</bdi> إن لم تتوفر مقاعد (<bdi>FR-202</bdi>)</td></tr>
+    <tr><td class="m"><span class="patch">PATCH</span></td><td class="p">/doctors/{id}</td><td>تعديل بيانات/تفعيل/تعطيل (<bdi>FR-203</bdi>)</td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/doctors/{id}/reset-password</td><td>إعادة تعيين كلمة المرور (<bdi>FR-204</bdi>)</td></tr>
+  </table>
+
+  <h3>الترميز والربط واللوحات (<bdi>FR-300/400</bdi>)</h3>
+  <table>
+    <tr><th>الطريقة</th><th>المسار</th><th>الوصف</th></tr>
+    <tr><td class="m"><span class="get">GET</span> / <span class="patch">PATCH</span></td><td class="p">/settings/coding-systems</td><td>عرض/تحديد أنظمة الترميز المعتمدة (<bdi>FR-301</bdi>)</td></tr>
+    <tr><td class="m"><span class="get">GET</span> / <span class="patch">PATCH</span></td><td class="p">/settings/integration</td><td>إعداد وجهة الرفع لنظام المستشفى (<bdi>FR-302</bdi>)</td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/settings/integration/test</td><td>اختبار الاتصال — يحدّث <bdi>last_test_*</bdi></td></tr>
+    <tr><td class="m"><span class="get">GET</span></td><td class="p">/dashboards/usage</td><td>لوحة الاستخدام (<bdi>FR-401</bdi>) — تجميعات فقط، لا محتوى سريري</td></tr>
+    <tr><td class="m"><span class="get">GET</span></td><td class="p">/dashboards/quality</td><td>لوحة الجودة (<bdi>FR-402</bdi>)</td></tr>
+    <tr><td class="m"><span class="get">GET</span></td><td class="p">/audit-logs</td><td>سجل التدقيق (<bdi>FR-303</bdi>)</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٤</span> نقاط الدكتور</h2>
+
+  <h3>القوالب (<bdi>FR-500</bdi>)</h3>
+  <table>
+    <tr><th>الطريقة</th><th>المسار</th><th>الوصف</th></tr>
+    <tr><td class="m"><span class="get">GET</span></td><td class="p">/templates</td><td>الجاهزة + الشخصية (<bdi>FR-501</bdi>)</td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/templates/reverse-build</td><td><b>البناء العكسي</b>: <bdi>{sample_text, summarization_style}</bdi> → بنية قالب مولّدة (<bdi>FR-502</bdi>) — لا يُحفظ تلقائياً</td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/templates/preview</td><td>معاينة قالب على نص تجريبي (<bdi>FR-503</bdi>)</td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/templates</td><td>حفظ القالب (يشمل ناتج البناء العكسي مع <bdi>origin=reverse_built</bdi>)</td></tr>
+    <tr><td class="m"><span class="patch">PATCH</span> / <span class="del">DELETE</span></td><td class="p">/templates/{id}</td><td>تعديل/حذف قالب شخصي (<bdi>FR-504</bdi>) · <bdi>PATCH /templates/{id}/default</bdi> للافتراضي (<bdi>FR-505</bdi>)</td></tr>
+  </table>
+
+  <h3>الزيارة — الإنشاء والتسجيل (<bdi>FR-600</bdi>)</h3>
+  <table>
+    <tr><th>الطريقة</th><th>المسار</th><th>الوصف</th></tr>
+    <tr><td class="m"><span class="get">GET</span></td><td class="p">/patients?query=</td><td>بحث مريض بالاسم/<bdi>MRN</bdi></td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/visits</td><td>إنشاء زيارة: <bdi>{patient_id, template_id}</bdi> → تُجلب لقطة ملف المريض (<bdi>FR-601</bdi>) وتكون الحالة <bdi>draft</bdi></td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/visits/{id}/recording/start | pause | resume | stop</td><td>تحكم التسجيل (<bdi>FR-603</bdi>) — <bdi>stop</bdi> يطلق توليد الملخص (<bdi>FR-605</bdi>)</td></tr>
+    <tr><td class="m"><span class="get">GET</span></td><td class="p">/visits/{id}/transcript</td><td>نص المحادثة الكامل (<bdi>FR-604</bdi>)</td></tr>
+    <tr><td class="m"><span class="get">GET</span></td><td class="p">/visits</td><td>سجل زيارات الدكتور مع حالة الرفع (<bdi>FR-804</bdi>)</td></tr>
+  </table>
+
+  <h3>الملخص والإرشاد والتحرير (<bdi>FR-700</bdi>)</h3>
+  <table>
+    <tr><th>الطريقة</th><th>المسار</th><th>الوصف</th></tr>
+    <tr><td class="m"><span class="get">GET</span></td><td class="p">/visits/{id}/summary</td><td>الملخص بأقسامه + الإرشادات المضمّنة لكل قسم بحالتها (<bdi>FR-701/702/703</bdi>) + <bdi>ETag</bdi></td></tr>
+    <tr><td class="m"><span class="patch">PATCH</span></td><td class="p">/summary-sections/{id}</td><td>تحرير كتابي لفقرة (<bdi>FR-705</bdi>) — يسجّل <bdi>edit_event(typing)</bdi></td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/summary-sections/{id}/dictate</td><td>تحرير صوتي: رفع مقطع إملاء → دمج في الفقرة (<bdi>FR-706</bdi>)</td></tr>
+    <tr><td class="m"><span class="patch">PATCH</span></td><td class="p">/guidance-items/{id}</td><td>حسم إرشاد: <bdi>{status: accepted|rejected|modified, modified_text?}</bdi> (<bdi>FR-704</bdi>)</td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/visits/{id}/ai-chat</td><td>محادثة التعديل الختامية: <bdi>{message}</bdi> → رد + قائمة فروقات مطبقة على الأقسام (<bdi>FR-707</bdi>) — يسجّل <bdi>edit_event(ai_chat)</bdi></td></tr>
+  </table>
+
+  <h3>الاعتماد والرفع (<bdi>FR-800</bdi>)</h3>
+  <table>
+    <tr><th>الطريقة</th><th>المسار</th><th>الوصف</th></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/visits/{id}/approve</td><td>البوابة النهائية (<bdi>FR-801</bdi>): يفشل إن وُجدت إرشادات <bdi>pending</bdi> (<bdi>MDF-4222</bdi>) · ينشئ <bdi>approval</bdi> ثم <bdi>upload_job</bdi> تلقائياً (<bdi>FR-802</bdi>)</td></tr>
+    <tr><td class="m"><span class="get">GET</span></td><td class="p">/visits/{id}/upload-status</td><td>حالة الرفع ومحاولاته (<bdi>FR-805</bdi>)</td></tr>
+    <tr><td class="m"><span class="post">POST</span></td><td class="p">/visits/{id}/upload-retry</td><td>إعادة محاولة يدوية بعد فشل نهائي</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٥</span> بروتوكول <bdi>WebSocket</bdi> — التفريغ الفوري</h2>
+  <p>المسار: <bdi>WSS /ws/visits/{id}/transcribe?token=</bdi> — يعمل فقط والزيارة في حالة <bdi>recording</bdi>.</p>
+  <div class="code"><pre>// العميل → الخادم
+{ "type": "audio_chunk", "seq": 41, "payload": "&lt;base64 opus 250ms&gt;" }
+{ "type": "pause" } | { "type": "resume" } | { "type": "end" }
+
+// الخادم → العميل
+{ "type": "partial",  "seq": 41, "text": "يشتكي المريض من ..." }      // ≤ 2s (NFR-01)
+{ "type": "final",    "segment_id": "s-17", "text": "...", "t0": 12.4, "t1": 15.1 }
+{ "type": "status",   "state": "summarizing" }                        // بعد end
+{ "type": "error",    "code": "MDF-5031" }</pre></div>
+  <ul>
+    <li><b>انقطاع الشبكة (<bdi>NFR-09</bdi>):</b> العميل يخزّن الأجزاء محلياً ويعيد الإرسال من آخر <bdi>seq</bdi> مؤكد عند إعادة الاتصال — الخادم يرد بـ<bdi>{type:"resume_from", seq}</bdi>.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">٦</span> واجهة الرفع لنظام المستشفى (خارجية)</h2>
+  <p>الرفع أحادي الاتجاه بصيغة <bdi>FHIR</bdi> متوافقة <bdi>NPHIES</bdi> إلى النقطة المهيأة في <bdi>FR-302</bdi>. الحزمة: <bdi>Bundle</bdi> يضم <bdi>Encounter + Composition (SOAP) + Condition[] + MedicationRequest[] + Procedure[]</bdi> بالرموز المعتمدة. تفاصيل الربط العميق ثنائي الاتجاه مؤجلة لـ<bdi>DOC-19</bdi>.</p>
+  <div class="locked"><b>مقفول:</b> لا نقطة نهاية خارج هذه الوثيقة · كل نقاط الدكتور تمر بفلتر <bdi>doctor_id</bdi> فوق <bdi>RLS</bdi> · <bdi>/approve</bdi> هي المسار الوحيد الذي يُنشئ <bdi>upload_job</bdi> · رموز الأخطاء حصرياً من <bdi>DOC-13</bdi>.</div>
+</section>
+
+<div class="approve">
+  <p>باعتماد هذه الوثيقة تُفتح <b><bdi>DOC-06</bdi> — مصفوفة الصلاحيات <bdi>RBAC</bdi></b>.</p>
+  <p>للاعتماد: <b>«اعتمد»</b> — أو اطلب تعديلات محددة.</p>
+</div>
+
+<footer>Medify · DOC-05 · الإصدار 1.0 · مصدر الحقيقة الوحيد لهذه المرحلة بعد الاعتماد</footer>
+</div>
+</body>
+</html>

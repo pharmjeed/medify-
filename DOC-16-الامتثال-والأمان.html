@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-16 — سجل الامتثال والأمان | Medify</title>
+<style>
+:root{--ink:#0f2233;--teal:#0e7c86;--td:#0a5c64;--sky:#eaf6f7;--line:#d7e3e8;--gold:#c9a227;--muted:#5b7280;--bg:#f7fafb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+.page{max-width:940px;margin:0 auto;padding:32px 24px 80px}
+header.doc{background:linear-gradient(135deg,var(--td),var(--teal));color:#fff;border-radius:14px;padding:34px 30px;margin-bottom:26px}
+.kicker{font-size:13px;opacity:.85}h1{font-size:28px;margin:6px 0 4px}.sub{font-size:15px;opacity:.9}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+.status{background:var(--gold)!important;color:#3a2c00;font-weight:700}
+section{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px 26px;margin-bottom:16px}
+h2{color:var(--td);font-size:19px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+h2 .num{color:var(--gold);margin-inline-end:6px}
+p{margin-bottom:10px}ul{margin:6px 24px 12px 0}li{margin-bottom:6px}
+bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,monospace;font-size:.93em;color:var(--td)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+th{background:var(--sky);color:var(--td);padding:7px 10px;text-align:right;border:1px solid var(--line)}
+td{padding:6px 10px;border:1px solid var(--line);vertical-align:top}
+.locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:13px 17px;margin:10px 0}.locked b{color:#7a6410}
+.verify{background:#fdf1f1;border:1px solid #eecaca;border-radius:10px;padding:13px 17px;margin:10px 0}.verify b{color:#a33}
+footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+.approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:16px 20px;text-align:center;font-size:15px;margin-top:22px}
+</style>
+</head>
+<body><div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 16 من 19 · مبنية على DOC-04/06/07 (معتمدة)</div>
+  <h1>DOC-16 — سجل الامتثال والأمان</h1>
+  <div class="sub">خريطة كل إطار تنظيمي إلى ضوابط تقنية منفذة فعلاً في الوثائق السابقة — الامتثال من اليوم الأول لا كإضافة لاحقة.</div>
+  <div class="meta"><span>الإصدار: 1.0</span><span>التاريخ: 2026-07-06</span><span class="status">الحالة: بانتظار الاعتماد</span><span>المالك: عبدالمجيد التركي</span></div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> سجل الأطر التنظيمية</h2>
+  <table>
+    <tr><th>الإطار</th><th>المتطلب الجوهري</th><th>الضابط المنفذ ومرجعه</th></tr>
+    <tr><td><b><bdi>PDPL</bdi></b></td><td>إقامة البيانات، تقليل الجمع، حقوق الأفراد، سياسة احتفاظ</td><td>استضافة داخل المملكة (<bdi>DOC-07</bdi>) · تشفير عمودي للـ<bdi>PII</bdi> و<bdi>AES-256</bdi> (<bdi>DOC-04</bdi>) · حذف آلي للتسجيلات (<bdi>retention_until</bdi>) · أقل سياق كافٍ للنماذج مع استبدال المعرفات (<bdi>DOC-08</bdi> §٦)</td></tr>
+    <tr><td><b><bdi>NPHIES/FHIR</bdi></b></td><td>توافق بنيوي للبيانات الصادرة</td><td>حزمة <bdi>Bundle</bdi> معيارية (<bdi>DOC-05</bdi> §٦) · تحقق بنيوي قبل الإرسال · صفة <bdi>Integrator</bdi> (مقفولة <bdi>DOC-01</bdi>)</td></tr>
+    <tr><td><b><bdi>Nafais</bdi></b> (البند 4-11)</td><td>التوثيق المصدري هو الإثبات الحصري</td><td>سلسلة إثبات كاملة غير قابلة للتعديل: تفريغ ← ملخص (أصل+معدل) ← إرشادات بحالتها ← اعتماد ببصمة <bdi>hash</bdi> (<bdi>DOC-04</bdi> §٥)</td></tr>
+    <tr><td><b><bdi>SFDA SaMD</bdi></b></td><td>تصنيف البرمجية كجهاز طبي</td><td>التموضع: أداة توثيق ودعم قرار باعتماد بشري إلزامي — لا تشخيص آلي (<bdi>FR-704</bdi>، <bdi>DOC-15</bdi> §٣)</td></tr>
+    <tr><td><b><bdi>CHI</bdi></b> (90/91)</td><td>ضوابط التعامل مع بيانات التأمين</td><td>لا تقديم مطالبات مباشر في الإطلاق الأول — الرفع لنظام المستشفى فقط · سجل تدقيق شامل</td></tr>
+    <tr><td><b><bdi>CBAHI</bdi></b></td><td>جودة التوثيق الصحي للاعتماد المؤسسي</td><td>ملخصات مهيكلة بقوالب + مقاييس جودة للوحة الأدمن (<bdi>FR-402</bdi>) — نقطة بيع للمنشآت</td></tr>
+    <tr><td><b><bdi>SCFHS</bdi></b></td><td>ترخيص الممارسين</td><td>حقل التخصص في حساب الدكتور؛ التحقق من الترخيص مسؤولية المنشأة (يُوثق في العقد)</td></tr>
+  </table>
+  <div class="verify"><b>بند بحاجة لتحقق متخصص قبل الإطلاق التجاري:</b> خطاب تصنيف رسمي من <bdi>SFDA</bdi> يؤكد أن Medify — بتصميمه الحالي (اقتراح + اعتماد بشري) — خارج نطاق <bdi>SaMD</bdi> عالي الخطورة أو ضمن فئة منخفضة. يُستشار مكتب تنظيمي محلي.</div>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> ضوابط الأمان التشغيلية</h2>
+  <table>
+    <tr><th>المجال</th><th>الضابط</th></tr>
+    <tr><td>الهوية والجلسات</td><td><bdi>argon2id</bdi> · <bdi>JWT</bdi> 30 دقيقة · قفل الحساب بعد 5 محاولات فاشلة مع تسجيل في <bdi>audit_logs</bdi></td></tr>
+    <tr><td>العزل</td><td>ثلاث طبقات (<bdi>DOC-06</bdi> §١) + اختبار آلي للعزل في كل <bdi>CI</bdi>: محاولة وصول عابرة للمنشآت يجب أن تفشل (<bdi>DOC-17</bdi>)</td></tr>
+    <tr><td>الأسرار</td><td>متغيرات بيئة مشفرة · مفاتيح التكامل مشفرة عموداً · تدوير كل 90 يوماً</td></tr>
+    <tr><td>النقل</td><td><bdi>TLS 1.3</bdi> إلزامي شاملاً <bdi>WSS</bdi> · <bdi>HSTS</bdi></td></tr>
+    <tr><td>النسخ الاحتياطي</td><td>يومي مشفر داخل المملكة · اختبار استعادة شهري موثق</td></tr>
+    <tr><td>الاستجابة للحوادث</td><td>تصنيف (تسريب بيانات = حرج) · إخطار المنشأة المتأثرة والجهة المختصة وفق مهل <bdi>PDPL</bdi> · قناة إبلاغ داخلية موثقة</td></tr>
+    <tr><td>وصول الدعم</td><td>لا وصول لمحتوى سريري إلا بجلسة موافقة موثقة من المنشأة (<bdi>DOC-06</bdi> §٤)</td></tr>
+  </table>
+  <div class="locked"><b>مقفول:</b> خريطة §١ مرجع الامتثال الوحيد · أي ميزة جديدة تُقيَّم ضدها قبل التنفيذ · التموضع «أداة باعتماد بشري» لا يُمس لأنه أساس موقف <bdi>SFDA</bdi>.</div>
+</section>
+
+<div class="approve"><p>التالية: <b><bdi>DOC-17</bdi> — خطة العيادة التجريبية والاختبار</b>.</p></div>
+<footer>Medify · DOC-16 · الإصدار 1.0</footer>
+</div></body></html>

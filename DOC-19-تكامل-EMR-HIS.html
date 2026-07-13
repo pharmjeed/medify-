@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-19 — تكامل EMR/HIS | Medify</title>
+<style>
+:root{--ink:#0f2233;--teal:#0e7c86;--td:#0a5c64;--sky:#eaf6f7;--line:#d7e3e8;--gold:#c9a227;--muted:#5b7280;--bg:#f7fafb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+.page{max-width:940px;margin:0 auto;padding:32px 24px 80px}
+header.doc{background:linear-gradient(135deg,var(--td),var(--teal));color:#fff;border-radius:14px;padding:34px 30px;margin-bottom:26px}
+.kicker{font-size:13px;opacity:.85}h1{font-size:28px;margin:6px 0 4px}.sub{font-size:15px;opacity:.9}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+.status{background:var(--gold)!important;color:#3a2c00;font-weight:700}
+section{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px 26px;margin-bottom:16px}
+h2{color:var(--td);font-size:19px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+h2 .num{color:var(--gold);margin-inline-end:6px}
+p{margin-bottom:10px}ul,ol{margin:6px 24px 12px 0}li{margin-bottom:6px}
+bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,monospace;font-size:.93em;color:var(--td)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+th{background:var(--sky);color:var(--td);padding:7px 10px;text-align:right;border:1px solid var(--line)}
+td{padding:6px 10px;border:1px solid var(--line);vertical-align:top}
+.locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:13px 17px;margin:10px 0}.locked b{color:#7a6410}
+.verify{background:#fdf1f1;border:1px solid #eecaca;border-radius:10px;padding:13px 17px;margin:10px 0}.verify b{color:#a33}
+footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+.approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:16px 20px;text-align:center;font-size:15px;margin-top:22px}
+</style>
+</head>
+<body><div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 19 من 19 (الأخيرة) · مرحلة ثانية — بعد نجاح العيادة التجريبية</div>
+  <h1>DOC-19 — تكامل <bdi>EMR/HIS</bdi> العميق</h1>
+  <div class="sub">خارطة الانتقال من الرفع أحادي الاتجاه (الإطلاق الأول) إلى التكامل ثنائي الاتجاه. لا يبدأ تنفيذها قبل اجتياز <bdi>DOC-17</bdi>.</div>
+  <div class="meta"><span>الإصدار: 1.0</span><span>التاريخ: 2026-07-06</span><span class="status">الحالة: بانتظار الاعتماد</span><span>المالك: عبدالمجيد التركي</span></div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> الوضع الحالي والهدف</h2>
+  <table>
+    <tr><th></th><th>الإطلاق الأول (مقفول)</th><th>المرحلة الثانية (هذه الوثيقة)</th></tr>
+    <tr><td><b>ملف المريض</b></td><td>لقطة تُجلب عند بدء الزيارة عبر وجهة الربط المهيأة (<bdi>FR-601</bdi>)</td><td>مزامنة حية: مشكلات، أدوية، حساسيات، نتائج مختبر — عبر <bdi>FHIR API</bdi> للنظام المضيف</td></tr>
+    <tr><td><b>الرفع</b></td><td>أحادي الاتجاه: <bdi>Bundle</bdi> بعد الاعتماد (<bdi>DOC-05</bdi> §٦)</td><td>كتابة مباشرة في السجل + تأكيد معرفات مقابلة (<bdi>Encounter ID</bdi> المضيف)</td></tr>
+    <tr><td><b>الجدولة</b></td><td>لا شيء — الدكتور يبدأ الزيارة يدوياً</td><td>قائمة مواعيد اليوم من النظام المضيف تفتح الزيارة بنقرة</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> مسارات العمل</h2>
+  <ol>
+    <li><b>مصفوفة الأنظمة المستهدفة:</b> حصر أنظمة <bdi>HIS</bdi> الشائعة في المستشفيات الخاصة السعودية لدى عملاء التجربة أولاً — التكامل يُبنى لنظام العميل الفعلي الأول، لا افتراضياً (التحقق قبل الالتزام).</li>
+    <li><b>اعتماد <bdi>NPHIES</bdi> كـ<bdi>Integrator</bdi>:</b> استكمال متطلبات المطابقة: <bdi>FHIR HL7</bdi> profiles سعودية، <bdi>PKI</bdi> وشهادات، بيئة <bdi>NPHIES</bdi> الاختبارية ثم الإنتاجية.</li>
+    <li><b>خرائط الترميز لـ<bdi>Nafais</bdi>:</b> مواءمة الداخلي مع <bdi>ICD-10-AM / ACHI / SBS / SFDA GTIN</bdi> بإصداراتها المرخصة — جدول <bdi>coding_system_configs</bdi> يتوسع بإصدارات مؤرخة.</li>
+    <li><b>التوسع الحكومي:</b> التجمعات الصحية تتطلب هذا التكامل مكتملاً — يسبق أي عرض عليها (<bdi>DOC-02</bdi> §٥).</li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="num">٣</span> المتطلبات المؤجلة المعرّفة مسبقاً</h2>
+  <ul>
+    <li>نطاق <bdi>FR</bdi> جديد يُفتح حينها: <bdi>FR-900..FR-999</bdi> (خارج نطاق <bdi>DOC-03</bdi> المقفول الحالي — يتطلب إصدار <bdi>PRD</bdi> جديداً معتمداً).</li>
+    <li>جداول جديدة متوقعة: <bdi>ehr_connections, sync_jobs, external_id_mappings</bdi> — تُعتمد بإصدار <bdi>ERD</bdi> لاحق.</li>
+    <li>شاشات جديدة: نطاق <bdi>W-300+</bdi> يُفتح بإصدار <bdi>DOC-10</bdi> لاحق.</li>
+  </ul>
+  <div class="verify"><b>بنود تحقق قبل التنفيذ:</b> وثائق <bdi>API</bdi> الفعلية لنظام العميل الأول · تكلفة ومدة اعتماد <bdi>NPHIES</bdi> الفعلية · رسوم تراخيص أنظمة الترميز (<bdi>IHACPA/CCHI</bdi>).</div>
+  <div class="locked"><b>مقفول:</b> لا تنفيذ لأي بند هنا قبل اجتياز العيادة التجريبية · التكامل الأول يُبنى لعميل حقيقي واحد · فتح النطاقات الجديدة يتطلب إصدارات وثائق معتمدة لا قرارات جلسة.</div>
+</section>
+
+<div class="approve">
+  <p><b>اكتملت المنظومة: 19/19 وثيقة.</b> باعتماد هذه الدفعة (<bdi>DOC-07..19</bdi>) تُقفل المرحلة الوثائقية ويُفتح <bdi>S0</bdi> من خطة السبرنتات.</p>
+  <p>للاعتماد: <b>«اعتمد»</b> — أو اطلب تعديلات محددة على أي وثيقة.</p>
+</div>
+
+<footer>Medify · DOC-19 · الإصدار 1.0 · آخر وثائق المنظومة</footer>
+</div></body></html>

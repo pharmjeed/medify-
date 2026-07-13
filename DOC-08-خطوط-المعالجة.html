@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOC-08 — خطوط المعالجة الذكية | Medify</title>
+<style>
+:root{--ink:#0f2233;--teal:#0e7c86;--td:#0a5c64;--sky:#eaf6f7;--line:#d7e3e8;--gold:#c9a227;--muted:#5b7280;--bg:#f7fafb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+.page{max-width:940px;margin:0 auto;padding:32px 24px 80px}
+header.doc{background:linear-gradient(135deg,var(--td),var(--teal));color:#fff;border-radius:14px;padding:34px 30px;margin-bottom:26px}
+.kicker{font-size:13px;opacity:.85}h1{font-size:28px;margin:6px 0 4px}.sub{font-size:15px;opacity:.9}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.meta span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-size:13px}
+.status{background:var(--gold)!important;color:#3a2c00;font-weight:700}
+section{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px 26px;margin-bottom:16px}
+h2{color:var(--td);font-size:19px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sky)}
+h2 .num{color:var(--gold);margin-inline-end:6px}
+p{margin-bottom:10px}ul{margin:6px 24px 12px 0}li{margin-bottom:6px}
+bdi{direction:ltr;unicode-bidi:isolate;font-family:Consolas,monospace;font-size:.93em;color:var(--td)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+th{background:var(--sky);color:var(--td);padding:7px 10px;text-align:right;border:1px solid var(--line)}
+td{padding:6px 10px;border:1px solid var(--line);vertical-align:top}
+.locked{background:#fbf7ea;border:1px solid #e8dcb0;border-radius:10px;padding:13px 17px;margin:10px 0}.locked b{color:#7a6410}
+.pr{border-inline-start:4px solid var(--teal);background:var(--sky);border-radius:8px;padding:11px 15px;margin:10px 0}
+.code{background:#0f2233;border-radius:12px;padding:15px;margin:12px 0;overflow-x:auto}
+.code pre{color:#9fd8dd;font-family:Consolas,monospace;font-size:12.5px;line-height:1.6;direction:ltr;text-align:left}
+footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+.approve{background:#fff;border:2px dashed var(--teal);border-radius:12px;padding:16px 20px;text-align:center;font-size:15px;margin-top:22px}
+</style>
+</head>
+<body><div class="page">
+
+<header class="doc">
+  <div class="kicker">منظومة وثائق Medify — الوثيقة 8 من 19 · مبنية على DOC-03/04/05/07 (معتمدة)</div>
+  <h1>DOC-08 — خطوط المعالجة الذكية</h1>
+  <div class="sub">خمسة خطوط <bdi>P1..P5</bdi>: مخطط المدخلات والمخرجات ومراحل كل خط. نصوص المطالبات نفسها في <bdi>DOC-15</bdi>.</div>
+  <div class="meta"><span>الإصدار: 1.0</span><span>التاريخ: 2026-07-06</span><span class="status">الحالة: بانتظار الاعتماد</span><span>المالك: عبدالمجيد التركي</span></div>
+</header>
+
+<section>
+  <h2><span class="num">١</span> <bdi>P1</bdi> — التفريغ الفوري</h2>
+  <table>
+    <tr><th></th><th>المواصفة</th></tr>
+    <tr><td><b>المدخل</b></td><td>أجزاء صوت <bdi>Opus 250ms</bdi> متدفقة عبر <bdi>WS</bdi> (<bdi>DOC-05</bdi> §٥) — عربي بلهجاته + مقاطع إنجليزية مختلطة</td></tr>
+    <tr><td><b>المخرج</b></td><td>رسائل <bdi>partial</bdi> (≤ 2s) ثم مقاطع <bdi>final</bdi> بطوابع زمنية → تُجمَّع في <bdi>transcripts.content_json</bdi></td></tr>
+    <tr><td><b>المراحل</b></td><td>استقبال ← <bdi>VAD</bdi> (كشف الكلام) ← <bdi>STT</bdi> ← تنقية مصطلحات طبية (قاموس تخصصي) ← بث</td></tr>
+    <tr><td><b>الفشل</b></td><td><bdi>MDF-5031</bdi> · الصوت الخام محفوظ دائماً — يمكن إعادة التفريغ دفعة واحدة بعد الجلسة</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٢</span> <bdi>P2</bdi> — التلخيص بالقالب (<bdi>SOAP</bdi>)</h2>
+  <table>
+    <tr><th></th><th>المواصفة</th></tr>
+    <tr><td><b>المدخل</b></td><td><bdi>{transcript, template.structure_json, visit_meta(specialty, visit_type)}</bdi></td></tr>
+    <tr><td><b>المخرج</b></td><td><bdi>JSON</bdi> صارم: أقسام مرتبة <bdi>{section_key, content}</bdi> → تُخزن في <bdi>summary_sections</bdi> (الأصل + النسخة الحالية)</td></tr>
+    <tr><td><b>القواعد</b></td><td>لا اختراع وقائع غير مذكورة في المحادثة · ما لم يُذكر يُترك فارغاً بعلامة <bdi>[لم يُذكر]</bdi> · اللغة: إنجليزية سريرية معيارية</td></tr>
+    <tr><td><b>الفشل</b></td><td><bdi>MDF-5032</bdi> · إعادة محاولة واحدة آلية ثم إشعار الدكتور</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٣</span> <bdi>P3</bdi> — الإرشاد المدمج (قلب المنتج)</h2>
+  <table>
+    <tr><th></th><th>المواصفة</th></tr>
+    <tr><td><b>المدخل</b></td><td><bdi>{summary_sections, patient_context_snapshot, transcript_highlights, active_coding_systems}</bdi> — المصدران المعتمدان في <bdi>DOC-01</bdi> §٤</td></tr>
+    <tr><td><b>المخرج</b></td><td>قائمة <bdi>guidance_items</bdi>: <bdi>{section_id, kind, suggestion_text, code_system?, code_value?, evidence_source, evidence_ref}</bdi></td></tr>
+    <tr><td><b>المراحل</b></td><td>تحليل سريري (تشخيص/أدوية/إجراءات مبنية على الملف + الزيارة) ← مطابقة ترميزية (صياغة كل إرشاد بمصطلحات النظام النشط) ← ربط كل إرشاد بفقرته ← ترشيح: لا إرشاد بلا تعليل</td></tr>
+    <tr><td><b>القواعد الحاكمة</b></td><td>اقتراح لا قرار (<bdi>FR-704</bdi>) · كل إرشاد يحمل <bdi>evidence_source</bdi> إلزامياً · فحص تعارض الأدوية مع قائمة أدوية الملف التاريخي · حساسية عالية لقضايا سلامة المريض (تُعلَّم <bdi>safety_flag</bdi>)</td></tr>
+    <tr><td><b>الفشل</b></td><td><bdi>MDF-5033</bdi> · عند الفشل يُعرض الملخص بلا إرشادات مع تنبيه واضح — لا يُحجب التدفق</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٤</span> <bdi>P4</bdi> — البناء العكسي للقوالب</h2>
+  <table>
+    <tr><th></th><th>المواصفة</th></tr>
+    <tr><td><b>المدخل</b></td><td><bdi>{sample_text, summarization_style}</bdi> — ما يكتبه الدكتور في <bdi>FR-502</bdi></td></tr>
+    <tr><td><b>المخرج</b></td><td><bdi>template.structure_json</bdi>: أقسام مستنتجة + تعليمات تلخيص لكل قسم + اسم مقترح — لا يُحفظ إلا بفعل الدكتور بعد المعاينة (<bdi>FR-503</bdi>)</td></tr>
+    <tr><td><b>المراحل</b></td><td>استنتاج البنية من المثال ← توليد تعليمات لكل قسم ← تشغيل معاينة على نص تجريبي قياسي</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٥</span> <bdi>P5</bdi> — محادثة التعديل الختامية</h2>
+  <table>
+    <tr><th></th><th>المواصفة</th></tr>
+    <tr><td><b>المدخل</b></td><td><bdi>{message, summary_sections_current, chat_history(visit)}</bdi></td></tr>
+    <tr><td><b>المخرج</b></td><td><bdi>{reply, patches:[{section_id, new_content}]}</bdi> — تُطبَّق الفروقات وتُعرض للدكتور مع تعليم ما تغيّر (<bdi>FR-707</bdi>)</td></tr>
+    <tr><td><b>القواعد</b></td><td>يعدل الملخص فقط — لا يضيف وقائع سريرية جديدة من عنده · طلب غامض = سؤال توضيحي في <bdi>reply</bdi> دون أي <bdi>patch</bdi> · كل تطبيق يسجّل <bdi>edit_event(ai_chat)</bdi></td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">٦</span> قواعد عرضية على كل الخطوط</h2>
+  <ul>
+    <li><b>تتبع الإصدار:</b> كل استدعاء يسجّل <bdi>{pipeline_id, prompt_version, model_ref}</bdi> (يظهر في <bdi>summaries.model_ref</bdi> و<bdi>DOC-14</bdi>).</li>
+    <li><b>الخصوصية:</b> تمرير أقل سياق كافٍ — المعرفات المباشرة (اسم/<bdi>MRN</bdi>) تُستبدل برموز جلسة قبل الإرسال للنموذج وتُعاد بعد الرد.</li>
+    <li><b>المخرجات <bdi>JSON</bdi> صارمة:</b> أي مخرج لا يطابق المخطط يُرفض ويُعاد الاستدعاء مرة واحدة ثم يُعلن فشل مرقّم.</li>
+  </ul>
+  <div class="locked"><b>مقفول:</b> خمسة خطوط فقط · مصدرا التحليل في <bdi>P3</bdi> هما الملف التاريخي + الزيارة الحالية حصراً · لا خط معالجة يكتب في القاعدة مباشرة — كلها عبر طبقة الخدمة.</div>
+</section>
+
+<div class="approve"><p>التالية: <b><bdi>DOC-09</bdi> — الفوترة والاشتراكات</b>.</p></div>
+<footer>Medify · DOC-08 · الإصدار 1.0</footer>
+</div></body></html>
