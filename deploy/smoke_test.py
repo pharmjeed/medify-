@@ -1,4 +1,4 @@
-"""End-to-end smoke test for the deployed demo journey."""
+"""End-to-end smoke test for the deployed human-approval journey."""
 import json
 import urllib.request
 
@@ -29,6 +29,14 @@ for section in summary["sections"]:
     for guidance in section["guidance"]:
         call(f"/guidance-items/{guidance['id']}", "PATCH", {"status": "accepted"})
 approval = call(f"/visits/{visit['id']}/approve", "POST")
-assert approval["status"] == "confirmed"
-assert call(f"/visits/{visit['id']}/upload-status")["status"] == "confirmed"
-print("SMOKE_OK", visit["id"], approval["upload"]["bundle_id"])
+assert approval["status"] in {"confirmed", "queued", "awaiting_configuration"}
+assert call(f"/visits/{visit['id']}/upload-status")["status"] == approval["status"]
+bundle = call(f"/visits/{visit['id']}/fhir-bundle")
+assert bundle["resourceType"] == "Bundle" and len(bundle["entry"]) == 4
+print("SMOKE_OK", visit["id"], approval["status"], approval["upload"]["bundle_id"])
+
+admin_login = call("/auth/login", "POST", {"facility": "demo", "username": "admin", "password": "Admin123!"})
+token = admin_login["access_token"]
+audit_check = call("/audit-logs/verify")
+assert audit_check["valid"] is True
+print("AUDIT_CHAIN_OK", audit_check["events_checked"], audit_check["head_hash"][:12])

@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-medify}
       POSTGRES_USER: ${POSTGRES_USER:-medify}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-medify-local-only}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
     volumes:
       - medify_pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -29,12 +29,22 @@ services:
     build: ./apps/api
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-medify}:${POSTGRES_PASSWORD:-medify-local-only}@db:5432/${POSTGRES_DB:-medify}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-medify}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@db:5432/${POSTGRES_DB:-medify}
       REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: ${SECRET_KEY:-medify-development-secret-change-me}
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
+      FIELD_ENCRYPTION_KEY: ${FIELD_ENCRYPTION_KEY:-}
       ACCESS_TOKEN_MINUTES: ${ACCESS_TOKEN_MINUTES:-30}
       REFRESH_TOKEN_DAYS: ${REFRESH_TOKEN_DAYS:-7}
-      DEMO_MODE: ${DEMO_MODE:-true}
+      DEMO_MODE: ${DEMO_MODE:-false}
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      LOGIN_MAX_ATTEMPTS: ${LOGIN_MAX_ATTEMPTS:-5}
+      LOGIN_LOCK_MINUTES: ${LOGIN_LOCK_MINUTES:-15}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-120}
+      DATA_REGION: ${DATA_REGION:-saudi-arabia}
+      SUPPORT_ACCESS_ENABLED: ${SUPPORT_ACCESS_ENABLED:-false}
+      PUBLIC_REGISTRATION_ENABLED: ${PUBLIC_REGISTRATION_ENABLED:-false}
     depends_on:
       db:
         condition: service_healthy

@@ -42,6 +42,9 @@ class Facility(Timestamped, Base):
     commercial_reg: Mapped[str] = mapped_column(String(50), unique=True)
     slug: Mapped[str] = mapped_column(String(80), unique=True)
     status: Mapped[str] = mapped_column(String(20), default="active")
+    data_region: Mapped[str] = mapped_column(String(40), default="saudi-arabia")
+    retention_days: Mapped[int] = mapped_column(Integer, default=3650)
+    privacy_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
 
 class Clinic(Timestamped, Base):
@@ -64,6 +67,10 @@ class User(Timestamped, Base):
     specialty: Mapped[str | None] = mapped_column(String(120), nullable=True)
     clinic_id: Mapped[str | None] = mapped_column(ForeignKey("clinics.id"), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    failed_login_attempts: Mapped[int] = mapped_column(Integer, default=0)
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    password_changed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
 
 
 class Subscription(Timestamped, Base):
@@ -93,6 +100,8 @@ class Patient(Timestamped, Base):
     dob: Mapped[str | None] = mapped_column(String(20), nullable=True)
     gender: Mapped[str | None] = mapped_column(String(20), nullable=True)
     context_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    retention_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    restricted: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
 class Template(Timestamped, Base):
@@ -167,7 +176,7 @@ class UploadJob(Timestamped, Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
     facility_id: Mapped[str] = mapped_column(ForeignKey("facilities.id"), index=True)
     visit_id: Mapped[str] = mapped_column(ForeignKey("visits.id"), unique=True)
-    status: Mapped[str] = mapped_column(String(20), default="queued")
+    status: Mapped[str] = mapped_column(String(40), default="queued")
     attempts_count: Mapped[int] = mapped_column(Integer, default=0)
     result_json: Mapped[dict] = mapped_column(JSON, default=dict)
 
@@ -182,6 +191,8 @@ class AuditLog(Base):
     entity_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     meta_json: Mapped[dict] = mapped_column(JSON, default=dict)
     at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    previous_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    event_hash: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
 
 
 class Notification(Base):
@@ -194,3 +205,53 @@ class Notification(Base):
     read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
 
+
+class Consent(Timestamped, Base):
+    __tablename__ = "consents"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    facility_id: Mapped[str] = mapped_column(ForeignKey("facilities.id"), index=True)
+    patient_id: Mapped[str] = mapped_column(ForeignKey("patients.id"), index=True)
+    purpose: Mapped[str] = mapped_column(String(80))
+    legal_basis: Mapped[str] = mapped_column(String(80))
+    status: Mapped[str] = mapped_column(String(20), default="granted")
+    granted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    withdrawn_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    evidence_json: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class DataSubjectRequest(Timestamped, Base):
+    __tablename__ = "data_subject_requests"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    facility_id: Mapped[str] = mapped_column(ForeignKey("facilities.id"), index=True)
+    patient_id: Mapped[str] = mapped_column(ForeignKey("patients.id"), index=True)
+    request_type: Mapped[str] = mapped_column(String(30))
+    status: Mapped[str] = mapped_column(String(20), default="received")
+    due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    handled_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class IntegrationConfig(Timestamped, Base):
+    __tablename__ = "integration_configs"
+    __table_args__ = (UniqueConstraint("facility_id", "kind"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    facility_id: Mapped[str] = mapped_column(ForeignKey("facilities.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(40))
+    mode: Mapped[str] = mapped_column(String(20), default="disabled")
+    endpoint: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    encrypted_secret: Mapped[str | None] = mapped_column(Text, nullable=True)
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    config_json: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class RefreshSession(Base):
+    __tablename__ = "refresh_sessions"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    facility_id: Mapped[str] = mapped_column(ForeignKey("facilities.id"), index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

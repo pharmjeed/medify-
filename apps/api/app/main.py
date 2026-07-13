@@ -1,8 +1,12 @@
 import hashlib
 import json
-from datetime import datetime, timezone
+import secrets
+from contextlib import asynccontextmanager
+from datetime import datetime, timedelta, timezone
+from html import escape
 from typing import Any
-from fastapi import Depends, FastAPI, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
+import redis
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -10,22 +14,51 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from .config import settings
+from .crypto import encrypt_value
 from .database import Base, SessionLocal, engine, get_db
 from .models import (
-    Approval, AuditLog, Clinic, Facility, GuidanceItem, Patient, Role, SeatEvent,
-    Subscription, SummarySection, Template, UploadJob, User, Visit, VisitState,
+    Approval, AuditLog, Clinic, Consent, DataSubjectRequest, Facility, GuidanceItem,
+    IntegrationConfig, Patient, RefreshSession, Role, SeatEvent, Subscription,
+    SummarySection, Template, UploadJob, User, Visit, VisitState,
 )
-from .security import create_token, current_user, hash_password, require, verify_password
+from .security import create_refresh_token, create_token, current_user, decode_token, hash_password, require, set_tenant_context, token_hash, verify_password
 
 
-app = FastAPI(title="Medify API", version="1.0.0", docs_url="/docs", redoc_url=None)
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    if settings.environment == "production":
+        if len(settings.secret_key) < 32 or settings.secret_key == "medify-development-secret-change-me":
+            raise RuntimeError("A strong SECRET_KEY is required in production")
+        if not settings.field_encryption_key:
+            raise RuntimeError("FIELD_ENCRYPTION_KEY is required in production")
+    Base.metadata.create_all(bind=engine)
+    seed_demo()
+    yield
+
+
+app = FastAPI(title="Medify API", version="1.0.0", docs_url="/docs" if settings.environment != "production" else None, redoc_url=None, lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=settings.origins,
+    allow_credentials=bool(settings.origins),
     allow_methods=["*"],
     allow_headers=["*"],
 )
+rate_store = redis.Redis.from_url(settings.redis_url, decode_responses=True)
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Permissions-Policy"] = "camera=(), geolocation=(), payment=()"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' ws: wss:"
+    if request.url.scheme == "https":
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Cache-Control"] = "no-store" if request.url.path.startswith("/api/") else response.headers.get("Cache-Control", "")
+    return response
 
 
 ERRORS = {
@@ -61,7 +94,12 @@ def stamp(value: Any):
 
 
 def audit(db: Session, user: User, action: str, entity: str, entity_id: str | None = None, meta: dict | None = None):
-    db.add(AuditLog(facility_id=user.facility_id, actor_user_id=user.id, action=action, entity=entity, entity_id=entity_id, meta_json=meta or {}))
+    previous = db.scalar(select(AuditLog.event_hash).where(AuditLog.facility_id == user.facility_id).order_by(AuditLog.at.desc()).limit(1))
+    at = datetime.now(timezone.utc)
+    payload = json.dumps({"facility_id": user.facility_id, "actor": user.id, "action": action, "entity": entity, "entity_id": entity_id, "meta": meta or {}, "at": at.isoformat()}, sort_keys=True, ensure_ascii=False)
+    event_hash = hashlib.sha256(f"{previous or ''}|{payload}".encode()).hexdigest()
+    db.add(AuditLog(facility_id=user.facility_id, actor_user_id=user.id, action=action, entity=entity, entity_id=entity_id, meta_json=meta or {}, at=at, previous_hash=previous, event_hash=event_hash))
+    db.flush()
 
 
 def clinic_json(item: Clinic):
@@ -96,7 +134,7 @@ class FacilityIn(BaseModel):
     slug: str
     admin_name: str
     username: str
-    password: str = Field(min_length=8)
+    password: str = Field(min_length=12)
     seats: int = Field(default=3, ge=1, le=500)
 
 
@@ -107,7 +145,7 @@ class ClinicIn(BaseModel):
 class DoctorIn(BaseModel):
     full_name: str
     username: str
-    password: str = Field(min_length=8)
+    password: str = Field(min_length=12)
     specialty: str
     clinic_id: str
 
@@ -117,6 +155,10 @@ class DoctorPatch(BaseModel):
     specialty: str | None = None
     clinic_id: str | None = None
     is_active: bool | None = None
+
+
+class PasswordResetIn(BaseModel):
+    password: str = Field(min_length=12)
 
 
 class SeatsPatch(BaseModel):
@@ -155,30 +197,106 @@ class ChatIn(BaseModel):
     message: str
 
 
+class ConsentIn(BaseModel):
+    patient_id: str
+    purpose: str = Field(min_length=3, max_length=80)
+    legal_basis: str = Field(min_length=3, max_length=80)
+    evidence: dict = Field(default_factory=dict)
+
+
+class DataRequestIn(BaseModel):
+    patient_id: str
+    request_type: str
+    notes: str | None = None
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "service": "medify-api"}
 
 
+@app.get("/ready")
+def ready(db: Session = Depends(get_db)):
+    db.execute(select(1))
+    rate_store.ping()
+    return {"status": "ready", "database": "ok", "redis": "ok", "region": settings.data_region}
+
+
+def set_auth_cookies(response: Response, access: str, refresh: str | None = None):
+    response.set_cookie("medify_access", access, httponly=True, secure=settings.cookie_secure, samesite="strict", max_age=settings.access_token_minutes * 60, path="/")
+    if refresh:
+        response.set_cookie("medify_refresh", refresh, httponly=True, secure=settings.cookie_secure, samesite="strict", max_age=settings.refresh_token_days * 86400, path="/api/v1/auth")
+
+
+def enforce_login_rate(request: Request, body: LoginIn):
+    identity = hashlib.sha256(f"{request.client.host if request.client else 'unknown'}|{body.facility}|{body.username}".encode()).hexdigest()
+    key = f"medify:login:{identity}"
+    try:
+        count = rate_store.incr(key)
+        if count == 1: rate_store.expire(key, 60)
+        if count > 12: raise HTTPException(429, "MDF-4011")
+    except HTTPException:
+        raise
+    except Exception:
+        pass
+
+
 @app.post("/api/v1/auth/login")
-def login(body: LoginIn, db: Session = Depends(get_db)):
+def login(body: LoginIn, request: Request, db: Session = Depends(get_db)):
+    enforce_login_rate(request, body)
     facility = db.scalar(select(Facility).where((Facility.slug == body.facility) | (Facility.commercial_reg == body.facility)))
+    if facility: set_tenant_context(db, facility.id)
     user = db.scalar(select(User).where(User.facility_id == facility.id, User.username == body.username)) if facility else None
+    now = datetime.now(timezone.utc)
+    if user and user.locked_until and user.locked_until > now:
+        raise HTTPException(403, "MDF-4013")
     if not user or not verify_password(body.password, user.password_hash):
+        if user:
+            user.failed_login_attempts += 1
+            if user.failed_login_attempts >= settings.login_max_attempts:
+                user.locked_until = now + timedelta(minutes=settings.login_lock_minutes)
+            audit(db, user, "auth.login_failed", "user", user.id, {"attempts": user.failed_login_attempts})
+            db.commit()
         raise HTTPException(401, "MDF-4011")
     if not user.is_active or facility.status != "active":
         raise HTTPException(403, "MDF-4013")
+    user.failed_login_attempts = 0; user.locked_until = None; user.last_login_at = now
+    access = create_token(user)
+    refresh_raw, refresh_hash = create_refresh_token()
+    db.add(RefreshSession(facility_id=user.facility_id, user_id=user.id, token_hash=refresh_hash, expires_at=now + timedelta(days=settings.refresh_token_days)))
+    audit(db, user, "auth.login_succeeded", "user", user.id)
+    db.commit()
     clinic = db.get(Clinic, user.clinic_id) if user.clinic_id else None
-    return data({"access_token": create_token(user), "token_type": "bearer", "user": {**user_json(user), "facility_name": facility.name, "clinic_name": clinic.name if clinic else None}, "facility": {"id": facility.id, "name": facility.name, "slug": facility.slug}})
+    response = JSONResponse(content=data({"access_token": access, "token_type": "bearer", "user": {**user_json(user), "facility_name": facility.name, "clinic_name": clinic.name if clinic else None}, "facility": {"id": facility.id, "name": facility.name, "slug": facility.slug}}))
+    set_auth_cookies(response, access, refresh_raw)
+    return response
 
 
 @app.post("/api/v1/auth/refresh")
-def refresh(user: User = Depends(current_user)):
-    return data({"access_token": create_token(user), "token_type": "bearer"})
+def refresh(request: Request, db: Session = Depends(get_db)):
+    raw = request.cookies.get("medify_refresh")
+    if not raw: raise HTTPException(401, "MDF-4012")
+    session = db.scalar(select(RefreshSession).where(RefreshSession.token_hash == token_hash(raw), RefreshSession.revoked_at.is_(None)))
+    now = datetime.now(timezone.utc)
+    if not session or session.expires_at <= now: raise HTTPException(401, "MDF-4012")
+    set_tenant_context(db, session.facility_id)
+    user = db.get(User, session.user_id)
+    if not user or not user.is_active: raise HTTPException(403, "MDF-4013")
+    session.last_used_at = now
+    access = create_token(user); db.commit()
+    response = JSONResponse(content=data({"access_token": access, "token_type": "bearer"}))
+    set_auth_cookies(response, access)
+    return response
 
 
 @app.post("/api/v1/auth/logout")
-def logout(_: User = Depends(current_user)):
+def logout(request: Request, response: Response, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    raw = request.cookies.get("medify_refresh")
+    if raw:
+        session = db.scalar(select(RefreshSession).where(RefreshSession.token_hash == token_hash(raw), RefreshSession.revoked_at.is_(None)))
+        if session: session.revoked_at = datetime.now(timezone.utc)
+    audit(db, user, "auth.logout", "user", user.id); db.commit()
+    response.delete_cookie("medify_access", path="/"); response.delete_cookie("medify_refresh", path="/api/v1/auth")
     return data({"logged_out": True})
 
 
@@ -191,10 +309,13 @@ def me(user: User = Depends(current_user), db: Session = Depends(get_db)):
 
 @app.post("/api/v1/facilities/register")
 def register(body: FacilityIn, db: Session = Depends(get_db)):
+    if not settings.public_registration_enabled and not settings.demo_mode:
+        raise HTTPException(403, "MDF-4031")
     if db.scalar(select(Facility).where((Facility.slug == body.slug) | (Facility.commercial_reg == body.commercial_reg))):
         raise HTTPException(422, "MDF-4225")
     facility = Facility(name=body.name, commercial_reg=body.commercial_reg, slug=body.slug)
     db.add(facility); db.flush()
+    set_tenant_context(db, facility.id)
     admin = User(facility_id=facility.id, role=Role.admin, full_name=body.admin_name, username=body.username, password_hash=hash_password(body.password))
     db.add(admin); db.flush()
     db.add(Subscription(facility_id=facility.id, seats_total=body.seats, plan="trial"))
@@ -260,10 +381,10 @@ def update_doctor(doctor_id: str, body: DoctorPatch, user: User = Depends(requir
 
 
 @app.post("/api/v1/doctors/{doctor_id}/reset-password")
-def reset_password(doctor_id: str, body: dict, user: User = Depends(require(Role.admin)), db: Session = Depends(get_db)):
+def reset_password(doctor_id: str, body: PasswordResetIn, user: User = Depends(require(Role.admin)), db: Session = Depends(get_db)):
     row = db.scalar(select(User).where(User.id == doctor_id, User.facility_id == user.facility_id, User.role == Role.doctor))
     if not row: raise HTTPException(404, "MDF-4041")
-    row.password_hash = hash_password(body.get("password", "Doctor123!")); audit(db, user, "doctor.password_reset", "user", row.id); db.commit()
+    row.password_hash = hash_password(body.password); row.password_changed_at = datetime.now(timezone.utc); audit(db, user, "doctor.password_reset", "user", row.id); db.commit()
     return data({"reset": True})
 
 
@@ -296,18 +417,35 @@ def patch_coding(body: list[dict], user: User = Depends(require(Role.admin)), db
 
 
 @app.get("/api/v1/settings/integration")
-def integration(user: User = Depends(require(Role.admin))):
-    return data({"endpoint_url": "https://his.example.sa/fhir", "mode": "test", "last_test_ok": True, "last_test_at": stamp(datetime.now(timezone.utc)), "secret_configured": False})
+def integration(user: User = Depends(require(Role.admin)), db: Session = Depends(get_db)):
+    row = db.scalar(select(IntegrationConfig).where(IntegrationConfig.facility_id == user.facility_id, IntegrationConfig.kind == "fhir"))
+    if not row: return data({"kind": "fhir", "endpoint_url": None, "mode": "disabled", "last_test_ok": False, "last_test_at": None, "secret_configured": False})
+    return data({"kind": row.kind, "endpoint_url": row.endpoint, "mode": row.mode, "last_test_ok": bool(row.verified_at), "last_test_at": stamp(row.verified_at), "secret_configured": bool(row.encrypted_secret), "config": row.config_json})
 
 
 @app.patch("/api/v1/settings/integration")
 def patch_integration(body: dict, user: User = Depends(require(Role.admin)), db: Session = Depends(get_db)):
-    audit(db, user, "settings.integration_updated", "facility", user.facility_id, {"mode": body.get("mode", "test")}); db.commit(); return data({**body, "secret_configured": bool(body.get("auth_secret"))})
+    mode = body.get("mode", "disabled")
+    endpoint = body.get("endpoint_url")
+    if mode not in {"disabled", "test", "production"}: raise HTTPException(422, "MDF-4225")
+    if mode != "disabled" and (not endpoint or not endpoint.startswith("https://")): raise HTTPException(422, "MDF-4225")
+    row = db.scalar(select(IntegrationConfig).where(IntegrationConfig.facility_id == user.facility_id, IntegrationConfig.kind == "fhir"))
+    if not row:
+        row = IntegrationConfig(facility_id=user.facility_id, kind="fhir"); db.add(row)
+    row.mode = mode; row.endpoint = endpoint; row.config_json = body.get("config", {})
+    if body.get("auth_secret"): row.encrypted_secret = encrypt_value(body["auth_secret"])
+    row.verified_at = None
+    audit(db, user, "settings.integration_updated", "integration", row.id, {"mode": mode, "endpoint": endpoint}); db.commit()
+    return data({"kind": "fhir", "endpoint_url": endpoint, "mode": mode, "last_test_ok": False, "secret_configured": bool(row.encrypted_secret)})
 
 
 @app.post("/api/v1/settings/integration/test")
-def test_integration(user: User = Depends(require(Role.admin))):
-    return data({"ok": True, "latency_ms": 184, "mode": "test"})
+def test_integration(user: User = Depends(require(Role.admin)), db: Session = Depends(get_db)):
+    row = db.scalar(select(IntegrationConfig).where(IntegrationConfig.facility_id == user.facility_id, IntegrationConfig.kind == "fhir"))
+    if not row or row.mode == "disabled" or not row.endpoint: raise HTTPException(504, "MDF-5052")
+    # A real connectivity test is intentionally not simulated. It is enabled only after
+    # endpoint allow-listing, credentials, and the facility's signed integration approval.
+    return data({"ok": False, "mode": row.mode, "requires_external_credentials": True})
 
 
 @app.get("/api/v1/dashboards/usage")
@@ -326,6 +464,23 @@ def audit_logs(page: int = 1, per_page: int = 25, user: User = Depends(require(R
     total = db.scalar(select(func.count()).select_from(query.subquery())) or 0
     rows = db.scalars(query.offset((page-1)*per_page).limit(min(per_page, 100))).all()
     return data([{"id": x.id, "action": x.action, "entity": x.entity, "entity_id": x.entity_id, "at": stamp(x.at), "meta": x.meta_json} for x in rows], {"total": total, "page": page})
+
+
+@app.get("/api/v1/audit-logs/verify")
+def verify_audit_chain(user: User = Depends(require(Role.admin)), db: Session = Depends(get_db)):
+    rows = db.scalars(select(AuditLog).where(AuditLog.facility_id == user.facility_id).order_by(AuditLog.at)).all()
+    previous = None
+    legacy_events = 0
+    for index, row in enumerate(rows):
+        if not row.event_hash:
+            if previous is not None: return data({"valid": False, "broken_at": row.id, "events_checked": index, "legacy_events": legacy_events})
+            legacy_events += 1; continue
+        payload = json.dumps({"facility_id": row.facility_id, "actor": row.actor_user_id, "action": row.action, "entity": row.entity, "entity_id": row.entity_id, "meta": row.meta_json or {}, "at": row.at.isoformat()}, sort_keys=True, ensure_ascii=False)
+        expected = hashlib.sha256(f"{previous or ''}|{payload}".encode()).hexdigest()
+        if row.previous_hash != previous or row.event_hash != expected:
+            return data({"valid": False, "broken_at": row.id, "events_checked": index})
+        previous = row.event_hash
+    return data({"valid": True, "events_checked": len(rows) - legacy_events, "legacy_events": legacy_events, "head_hash": previous})
 
 
 @app.get("/api/v1/templates")
@@ -367,6 +522,39 @@ def patients(query: str = Query(default=""), user: User = Depends(require(Role.d
     if query: stmt = stmt.where((Patient.display_name.contains(query)) | (Patient.hospital_mrn.contains(query)))
     rows = db.scalars(stmt.limit(25)).all()
     return data([{"id": x.id, "display_name": x.display_name, "hospital_mrn": x.hospital_mrn, "dob": x.dob, "gender": x.gender, "context": x.context_json} for x in rows])
+
+
+@app.post("/api/v1/consents")
+def create_consent(body: ConsentIn, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    patient = db.scalar(select(Patient).where(Patient.id == body.patient_id, Patient.facility_id == user.facility_id))
+    if not patient: raise HTTPException(404, "MDF-4041")
+    row = Consent(facility_id=user.facility_id, patient_id=patient.id, purpose=body.purpose, legal_basis=body.legal_basis, evidence_json=body.evidence)
+    db.add(row); db.flush(); audit(db, user, "consent.granted", "consent", row.id, {"purpose": row.purpose}); db.commit()
+    return data({"id": row.id, "status": row.status, "granted_at": stamp(row.granted_at)})
+
+
+@app.get("/api/v1/patients/{patient_id}/consents")
+def list_consents(patient_id: str, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    patient = db.scalar(select(Patient).where(Patient.id == patient_id, Patient.facility_id == user.facility_id))
+    if not patient: raise HTTPException(404, "MDF-4041")
+    rows = db.scalars(select(Consent).where(Consent.patient_id == patient.id, Consent.facility_id == user.facility_id).order_by(Consent.granted_at.desc())).all()
+    return data([{"id": x.id, "purpose": x.purpose, "legal_basis": x.legal_basis, "status": x.status, "granted_at": stamp(x.granted_at), "withdrawn_at": stamp(x.withdrawn_at)} for x in rows])
+
+
+@app.post("/api/v1/privacy/requests")
+def create_privacy_request(body: DataRequestIn, user: User = Depends(require(Role.admin)), db: Session = Depends(get_db)):
+    if body.request_type not in {"access", "correction", "deletion", "restriction", "export"}: raise HTTPException(422, "MDF-4225")
+    patient = db.scalar(select(Patient).where(Patient.id == body.patient_id, Patient.facility_id == user.facility_id))
+    if not patient: raise HTTPException(404, "MDF-4041")
+    row = DataSubjectRequest(facility_id=user.facility_id, patient_id=patient.id, request_type=body.request_type, due_at=datetime.now(timezone.utc) + timedelta(days=30), notes=body.notes)
+    db.add(row); db.flush(); audit(db, user, "privacy.request_received", "data_subject_request", row.id, {"type": row.request_type}); db.commit()
+    return data({"id": row.id, "status": row.status, "due_at": stamp(row.due_at)})
+
+
+@app.get("/api/v1/privacy/requests")
+def list_privacy_requests(user: User = Depends(require(Role.admin)), db: Session = Depends(get_db)):
+    rows = db.scalars(select(DataSubjectRequest).where(DataSubjectRequest.facility_id == user.facility_id).order_by(DataSubjectRequest.created_at.desc())).all()
+    return data([{"id": x.id, "patient_id": x.patient_id, "request_type": x.request_type, "status": x.status, "due_at": stamp(x.due_at), "completed_at": stamp(x.completed_at)} for x in rows])
 
 
 @app.post("/api/v1/visits")
@@ -469,9 +657,39 @@ def approve(visit_id: str, user: User = Depends(require(Role.doctor)), db: Sessi
     codes = "|".join((g.code_value or "") for s in row.sections for g in s.guidance if g.status in {"accepted", "modified"})
     approval = Approval(facility_id=user.facility_id, visit_id=row.id, approved_by=user.id, summary_hash=hashlib.sha256(summary_text.encode()).hexdigest(), codes_hash=hashlib.sha256(codes.encode()).hexdigest())
     db.add(approval); db.flush()
-    job = UploadJob(facility_id=user.facility_id, visit_id=row.id, status="confirmed", attempts_count=1, result_json={"bundle_id": f"Bundle/{row.id[:8]}", "nphies_validation": "passed", "demo": settings.demo_mode})
-    db.add(job); row.state = VisitState.uploaded; audit(db, user, "visit.approved", "visit", row.id); audit(db, user, "upload.result", "visit", row.id, {"status": "confirmed", "attempts": 1}); db.commit()
+    integration = db.scalar(select(IntegrationConfig).where(IntegrationConfig.facility_id == user.facility_id, IntegrationConfig.kind == "fhir"))
+    can_upload = bool(settings.demo_mode or (integration and integration.mode == "production" and integration.verified_at))
+    status = "confirmed" if settings.demo_mode else ("queued" if can_upload else "awaiting_configuration")
+    result = {"bundle_id": f"Bundle/{row.id[:8]}", "demo": settings.demo_mode, "human_approved": True}
+    job = UploadJob(facility_id=user.facility_id, visit_id=row.id, status=status, attempts_count=1 if settings.demo_mode else 0, result_json=result)
+    db.add(job); row.state = VisitState.uploaded if status == "confirmed" else VisitState.approved
+    audit(db, user, "visit.approved", "visit", row.id); audit(db, user, "upload.queued" if can_upload else "upload.awaiting_configuration", "visit", row.id, {"status": status}); db.commit()
     return data({"approval_id": approval.id, "summary_hash": approval.summary_hash, "upload": job.result_json, "status": job.status})
+
+
+def fhir_bundle(row: Visit) -> dict:
+    sections = sorted(row.sections, key=lambda value: value.position)
+    patient = row.patient
+    composition_id = f"composition-{row.id}"
+    return {
+        "resourceType": "Bundle", "type": "transaction", "id": row.id,
+        "meta": {"tag": [{"system": "https://medify.sa/tags", "code": "human-approved"}]},
+        "entry": [
+            {"fullUrl": f"urn:uuid:{patient.id}", "resource": {"resourceType": "Patient", "id": patient.id, "identifier": [{"system": "urn:medify:mrn", "value": patient.hospital_mrn}], "name": [{"text": patient.display_name}], "gender": "male" if patient.gender in {"ذكر", "male"} else "female" if patient.gender in {"أنثى", "female"} else "unknown", "birthDate": patient.dob}, "request": {"method": "PUT", "url": f"Patient/{patient.id}"}},
+            {"fullUrl": f"urn:uuid:{row.doctor_id}", "resource": {"resourceType": "Practitioner", "id": row.doctor_id}, "request": {"method": "PUT", "url": f"Practitioner/{row.doctor_id}"}},
+            {"fullUrl": f"urn:uuid:{row.id}", "resource": {"resourceType": "Encounter", "id": row.id, "status": "finished", "class": {"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode", "code": "AMB"}, "subject": {"reference": f"Patient/{patient.id}"}, "participant": [{"individual": {"reference": f"Practitioner/{row.doctor_id}"}}]}, "request": {"method": "PUT", "url": f"Encounter/{row.id}"}},
+            {"fullUrl": f"urn:uuid:{composition_id}", "resource": {"resourceType": "Composition", "id": composition_id, "status": "final", "type": {"coding": [{"system": "http://loinc.org", "code": "34117-2", "display": "History and physical note"}]}, "subject": {"reference": f"Patient/{patient.id}"}, "encounter": {"reference": f"Encounter/{row.id}"}, "date": row.updated_at.isoformat(), "author": [{"reference": f"Practitioner/{row.doctor_id}"}], "title": "Medify Clinical Note", "section": [{"title": section.section_key, "code": {"text": section.section_key}, "text": {"status": "generated", "div": f"<div xmlns=\"http://www.w3.org/1999/xhtml\">{escape(section.content_current)}</div>"}} for section in sections]}, "request": {"method": "PUT", "url": f"Composition/{composition_id}"}},
+        ],
+    }
+
+
+@app.get("/api/v1/visits/{visit_id}/fhir-bundle")
+def export_fhir_bundle(visit_id: str, user: User = Depends(require(Role.doctor)), db: Session = Depends(get_db)):
+    row = owned_visit(db, visit_id, user, True)
+    if row.state not in {VisitState.approved, VisitState.uploaded, VisitState.upload_failed}: raise HTTPException(422, "MDF-4226")
+    if not db.scalar(select(Approval).where(Approval.visit_id == row.id, Approval.facility_id == user.facility_id)): raise HTTPException(422, "MDF-4226")
+    bundle = fhir_bundle(row); audit(db, user, "fhir.bundle_exported", "visit", row.id, {"entries": len(bundle["entry"])}); db.commit()
+    return data(bundle)
 
 
 @app.get("/api/v1/visits/{visit_id}/upload-status")
@@ -483,7 +701,11 @@ def upload_status(visit_id: str, user: User = Depends(require(Role.doctor)), db:
 def upload_retry(visit_id: str, user: User = Depends(require(Role.doctor)), db: Session = Depends(get_db)):
     row = owned_visit(db, visit_id, user); job = db.scalar(select(UploadJob).where(UploadJob.visit_id == row.id))
     if not job: raise HTTPException(404, "MDF-4041")
-    job.attempts_count += 1; job.status = "confirmed"; row.state = VisitState.uploaded; db.commit(); return data({"status": job.status, "attempts": job.attempts_count})
+    integration = db.scalar(select(IntegrationConfig).where(IntegrationConfig.facility_id == user.facility_id, IntegrationConfig.kind == "fhir", IntegrationConfig.mode == "production", IntegrationConfig.verified_at.is_not(None)))
+    if not settings.demo_mode and not integration: raise HTTPException(504, "MDF-5052")
+    job.attempts_count += 1; job.status = "confirmed" if settings.demo_mode else "queued"
+    row.state = VisitState.uploaded if settings.demo_mode else VisitState.approved
+    audit(db, user, "upload.retry_requested", "visit", row.id, {"attempts": job.attempts_count}); db.commit(); return data({"status": job.status, "attempts": job.attempts_count})
 
 
 DEMO_TRANSCRIPT = [
@@ -512,6 +734,17 @@ def build_demo_summary(db: Session, visit: Visit):
 
 @app.websocket("/ws/visits/{visit_id}/transcribe")
 async def transcribe_socket(websocket: WebSocket, visit_id: str):
+    raw_token = websocket.query_params.get("token") or websocket.cookies.get("medify_access")
+    try:
+        payload = decode_token(raw_token or "")
+    except HTTPException:
+        await websocket.close(code=4401); return
+    db = SessionLocal()
+    set_tenant_context(db, payload.get("facility_id", ""))
+    visit = db.scalar(select(Visit).where(Visit.id == visit_id, Visit.facility_id == payload.get("facility_id"), Visit.doctor_id == payload.get("sub")))
+    db.close()
+    if not visit:
+        await websocket.close(code=4403); return
     await websocket.accept()
     seq = 0
     try:
@@ -537,6 +770,7 @@ def seed_demo():
         if db.scalar(select(Facility).where(Facility.slug == "demo")): return
         facility = Facility(name="مجمع الشفاء الطبي", commercial_reg="1010456789", slug="demo")
         db.add(facility); db.flush()
+        set_tenant_context(db, facility.id)
         clinic = Clinic(facility_id=facility.id, name="عيادة الباطنة"); db.add(clinic); db.flush()
         admin = User(facility_id=facility.id, role=Role.admin, full_name="عبدالله محمد العتيبي", username="admin", password_hash=hash_password("Admin123!"))
         doctor = User(facility_id=facility.id, role=Role.doctor, full_name="د. أحمد سعد الغامدي", username="doctor", password_hash=hash_password("Doctor123!"), specialty="باطنة", clinic_id=clinic.id)
@@ -550,9 +784,3 @@ def seed_demo():
         db.commit()
     finally:
         db.close()
-
-
-@app.on_event("startup")
-def startup():
-    Base.metadata.create_all(bind=engine)
-    seed_demo()
